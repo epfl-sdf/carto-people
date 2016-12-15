@@ -1,0 +1,84 @@
+{
+  "employees": [
+    {
+      "id": 1111,
+      "first_name": "first_name_1",
+      "last_name": "last_name_1",
+      "sex": "m",
+      "competences": [
+        {
+          "id": 2,
+          "name": "competence_2"
+        },
+        {
+          "id": 3,
+          "name": "competence_3"
+        }
+      ]
+    },
+    {
+      "id": 2222,
+      "first_name": "first_name_2",
+      "last_name": "last_name_2",
+      "sex": "f",
+      "competences": [
+        {
+          "id": 1,
+          "name": "competence_1"
+        }
+      ]
+    },
+    {
+      "id": 3333,
+      "first_name": "first_name_3",
+      "last_name": "last_name_3",
+      "sex": "f",
+      "competences": [
+        {
+          "id": 2,
+          "name": "competence_2"
+        },
+        {
+          "id": 1,
+          "name": "competence_1"
+        }
+      ]
+    },
+    {
+      "id": 4444,
+      "first_name": "first_name_4",
+      "last_name": "last_name_4",
+      "sex": "m",
+      "competences": [
+        {
+          "id": 3,
+          "name": "competence_3"
+        },
+        {
+          "id": 1,
+          "name": "competence_1"
+        },
+        {
+          "id": 2,
+          "name": "competence_2"
+        }
+      ]
+    },
+    {
+      "id": 5555,
+      "first_name": "first_name_5",
+      "last_name": "last_name_5",
+      "sex": "m",
+      "competences": [
+        {
+          "id": 3,
+          "name": "competence_3"
+        },
+        {
+          "id": 1,
+          "name": "competence_1"
+        }
+      ]
+    }
+  ]
+}
