@@ -41,12 +41,14 @@ class Map extends React.Component {
     /* START CY INIT */
     const cy = cytoscape({
       container: document.getElementById('graph-container'),
+      panningEnabled: false,
       style: cytoscape.stylesheet()
         .selector('node')
         .css({
           height: 40,
           width: 40,
           'background-fit': 'cover',
+          'border-color': colors.black,
           'border-width': 2,
           padding: '20px',
           'text-size': '20pt',
@@ -59,6 +61,7 @@ class Map extends React.Component {
         .css({
           'border-width': 3,
           'border-color': colors.blue,
+          'text-outline-color': colors.blue,
         })
         .selector('.employee')
         .css({
@@ -101,8 +104,8 @@ class Map extends React.Component {
     /* END CY INIT */
 
     /* START CY EVENT MANAGER */
-    cy.on('select', (e) => {
-      this.props.viewStore.selectedNodes = cy.$(':selected').jsons();
+    cy.on('select', () => {
+      this.props.viewStore.selectedNodes = cy.$(':selected').jsons().filter(e => e.group === 'nodes');
     });
 
     let tappedBefore;

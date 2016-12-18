@@ -3,14 +3,11 @@ apt-get update
 apt-get -y install curl
 apt-get -y install git
 
-# Node Version Manager - Simple bash script to manage multiple active node.js versions
-curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.32.1/install.sh | bash
+curl -sL https://deb.nodesource.com/setup_7.x | sudo -E bash -
+apt-get install -y nodejs
 
-. $HOME/.nvm/nvm.sh && nvm install node && nvm use node
-
-npm install -g nodemon
-
-git clone https://github.com/sdfepfl/react-express-boilerplate
-cd react-express-boilerplate
+git clone https://github.com/sdfepfl/javascript-boilerplate
+cd javascript-boilerplate
 npm install
-npm start
+
+NODE_ENV=production nohup npm start &
