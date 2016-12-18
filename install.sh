@@ -5,8 +5,7 @@ apt-get -y install git
 
 # Node Version Manager - Simple bash script to manage multiple active node.js versions
 curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.32.1/install.sh | bash
-env NVM_DIR=/root/.nvm
-env SHIPPABLE_NODE_VERSION=v7.1.0
+
 . $HOME/.nvm/nvm.sh && nvm install node && nvm use node
 
 npm install -g nodemon
