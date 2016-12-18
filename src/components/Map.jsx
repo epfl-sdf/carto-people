@@ -1,8 +1,7 @@
 /* eslint react/prop-types: 0 */
 
 import React from 'react';
-import { observer } from 'mobx-react';
-import { find } from 'lodash';
+import { inject } from 'mobx-react';
 import cytoscape from 'cytoscape';
 
 const colors = {
@@ -16,29 +15,50 @@ const colors = {
   black: '#000000',
 };
 
-@observer
+@inject('viewStore')
 class Map extends React.Component {
   constructor() {
     super();
 
+    this.renderGraph = this.renderGraph.bind(this);
+    this.constructGraph = this.constructGraph.bind(this);
     this.fetchData = this.fetchData.bind(this);
     this.constructLinkedData = this.constructLinkedData.bind(this);
   }
   componentDidMount() {
-    const data = this.fetchData();
-
+    this.renderGraph();
+  }
+  componentDidUpdate() {
+    this.renderGraph();
+  }
+  renderGraph() {
+    if (this.props.params.id && this.props.params.type) {
+      const data = this.constructLinkedData(this.fetchData());
+      this.constructGraph(data);
+    }
+  }
+  constructGraph(data) {
     /* START CY INIT */
     const cy = cytoscape({
       container: document.getElementById('graph-container'),
-      autounselectify: true,
       style: cytoscape.stylesheet()
         .selector('node')
         .css({
-          height: 60,
-          width: 60,
+          height: 40,
+          width: 40,
           'background-fit': 'cover',
           'border-width': 2,
           padding: '20px',
+          'text-size': '20pt',
+          content: 'data(label)',
+          'text-outline-width': 2,
+          'text-outline-color': colors.black,
+          color: '#fff',
+        })
+        .selector(':selected')
+        .css({
+          'border-width': 3,
+          'border-color': colors.blue,
         })
         .selector('.employee')
         .css({
@@ -65,7 +85,7 @@ class Map extends React.Component {
           'target-arrow-color': '#000000',
           'curve-style': 'bezier',
         }),
-      elements: this.constructLinkedData(data),
+      elements: data,
       layout: {
         // The breadthfirst layout puts nodes in a hierarchy,
         // based on a breadthfirst traversal of the graph.
@@ -82,17 +102,41 @@ class Map extends React.Component {
 
     /* START CY EVENT MANAGER */
     cy.on('select', (e) => {
-      console.log(e);
+      this.props.viewStore.selectedNodes = cy.$(':selected').jsons();
     });
+
+    let tappedBefore;
+    let tappedTimeout;
+    cy.on('tap', (event) => {
+      // create a doubleTap event
+      const tappedNow = event.cyTarget;
+      if (tappedTimeout && tappedBefore) {
+        clearTimeout(tappedTimeout);
+      }
+      if (tappedBefore === tappedNow) {
+        tappedNow.trigger('doubleTap');
+        tappedBefore = null;
+      } else {
+        tappedTimeout = setTimeout(() => { tappedBefore = null; }, 300);
+        tappedBefore = tappedNow;
+      }
+    });
+
+    cy.on('doubleTap', 'node', (event) => {
+      const nodeData = event.cyTarget.data();
+
+      this.props.router.push(`/${nodeData.type}/${nodeData.id}`);
+    });
+
     /* END CY EVENT MANAGER */
   }
   fetchData() {
-    switch (this.props.type) {
+    switch (this.props.params.type) {
       case 'employee': {
-        return this.props.employees.find(employee => employee.id === parseInt(this.props.id, 10));
+        return this.props.employeeStore.getEmployee(this.props.params.id);
       }
       case 'competence': {
-        return [];
+        return this.props.competenceStore.getCompetence(this.props.params.id);
       }
       default:
         return [];
@@ -101,23 +145,28 @@ class Map extends React.Component {
   constructLinkedData(data) {
     const linkedDatas = [];
 
-    switch (this.props.type) {
+    switch (this.props.params.type) {
       case 'employee': {
         linkedDatas.push({
           group: 'nodes',
           classes: `employee ${data.sex}`,
           data: {
             id: data.id,
+            label: `${data.first_name} ${data.last_name}`,
+            type: 'employee',
             details: data,
           },
         });
 
+        // iterate through competences for the given employee and add a node + edge
         for (let i = 0; i < data.competences.length; i += 1) {
           linkedDatas.push({
             group: 'nodes',
             classes: 'competence',
             data: {
               id: data.competences[i].id,
+              label: `${data.competences[i].name}`,
+              type: 'competence',
               details: data.competences[i],
             },
           });
@@ -134,6 +183,40 @@ class Map extends React.Component {
         break;
       }
       case 'competence': {
+        linkedDatas.push({
+          group: 'nodes',
+          classes: 'competence',
+          data: {
+            id: data.id,
+            label: `${data.name}`,
+            type: 'competence',
+            details: data,
+          },
+        });
+
+        const employees = this.props.employeeStore.getEmployeesWithCompetence(this.props.params.id);
+        // iterate through employees for the given competence and add a node + edge
+        for (let i = 0; i < employees.length; i += 1) {
+          linkedDatas.push({
+            group: 'nodes',
+            classes: `employee ${employees[i].sex}`,
+            data: {
+              id: employees[i].id,
+              label: `${employees[i].first_name} ${employees[i].last_name}`,
+              type: 'employee',
+              details: employees[i],
+            },
+          });
+
+          linkedDatas.push({
+            group: 'edges',
+            data: {
+              id: `${data.id}_${employees[i].id}`,
+              source: data.id,
+              target: employees[i].id,
+            },
+          });
+        }
         break;
       }
       default:
@@ -143,7 +226,9 @@ class Map extends React.Component {
     return linkedDatas;
   }
   render() {
-    return (<div id="graph-container" />);
+    return (this.props.params.id && this.props.params.type
+      ? <div id="graph-container" />
+      : <h2>General mal not implemented yet, please select an employee</h2>);
   }
 }
 

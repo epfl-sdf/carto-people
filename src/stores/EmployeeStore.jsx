@@ -4,6 +4,10 @@ import axios from 'axios';
 export default class EmployeeStore {
   @observable employees = [];
 
+  constructor() {
+    this.loadEmployees();
+  }
+
   @computed get isLoading() {
     return this.employees.length === 0;
   }
@@ -20,5 +24,15 @@ export default class EmployeeStore {
 
   getEmployees() {
     return this.employees;
+  }
+
+  getEmployee(employeeId) {
+    return this.employees.find(e => e.id === parseInt(employeeId, 10));
+  }
+
+  getEmployeesWithCompetence(competenceId) {
+    return this.employees.filter(
+      e => e.competences.map(c => c.id).includes(parseInt(competenceId, 10))
+    );
   }
 }
