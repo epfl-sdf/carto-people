@@ -5,6 +5,9 @@ import { Menu, Icon } from 'antd';
 import { inject } from 'mobx-react';
 import cytoscape from 'cytoscape';
 
+const SubMenu = Menu.SubMenu;
+const MenuItemGroup = Menu.ItemGroup;
+
 const colors = {
   blue: '#3498db',
   orange: '#d35400',
@@ -39,9 +42,8 @@ class Map extends React.Component {
   resetLayout() {
     this.cy.layout({
       name: 'breadthfirst',
-      avoidOverlap: true,
       circle: true,
-      fit: true,
+      avoidOverlap: true,
       roots: this.cy.filter('.root'),
     });
   }
@@ -104,18 +106,11 @@ class Map extends React.Component {
           'curve-style': 'bezier',
         }),
       elements: data,
-      layout: {
-        // The breadthfirst layout puts nodes in a hierarchy,
-        // based on a breadthfirst traversal of the graph.
-        name: 'breadthfirst',
-        // whether the tree is directed downwards (or edges can point in any direction if false)
-        directed: true,
-        // put depths in concentric circles if true, put depths top down if false
-        circle: true,
-      },
+      motionBlur: true,
     });
-    /* END CY INIT */
     this.cy.$(`#${this.props.params.id}`).addClass('root');
+    this.resetLayout();
+    /* END CY INIT */
 
     /* START CY EVENT MANAGER */
     this.cy.on('select', () => {
@@ -305,9 +300,23 @@ class Map extends React.Component {
   handleMenuClick(e) {
     if (this.cy) {
       switch (e.key) {
-        case 'export': {
-          const url = this.cy.jpg().replace(/^data:image\/[^;]/, 'data:application/octet-stream');
-          window.open(url);
+        case 'export:jpg': {
+          // ugly solution due to the fact that HTML5 download tag not widely supported
+          const link = document.createElement('a');
+          link.href = this.cy.jpg();
+          link.download = 'export.jpg';
+          link.click();
+          break;
+        }
+        case 'export:png': {
+          const link = document.createElement('a');
+          link.href = this.cy.png();
+          link.download = 'export.png';
+          link.click();
+          break;
+        }
+        case 'export:svg': {
+          alert('Not implemented yet');
           break;
         }
         case 'zoom_in': {
@@ -318,6 +327,10 @@ class Map extends React.Component {
         case 'zoom_out': {
           this.cy.zoom(this.cy.zoom() / 1.1);
           this.cy.center();
+          break;
+        }
+        case 'recenter': {
+          this.cy.fit();
           break;
         }
         default:
@@ -335,14 +348,19 @@ class Map extends React.Component {
     return (this.props.params.id && this.props.params.type
       ? <div>
         <Menu mode="horizontal" onClick={this.handleMenuClick}>
-          <Menu.Item key="export">
-            <Icon type="download" /> Export
-          </Menu.Item>
+          <SubMenu title={<span><Icon type="download" />Export</span>}>
+            <Menu.Item key="export:jpg">To JPG</Menu.Item>
+            <Menu.Item key="export:png">To PNG</Menu.Item>
+            <Menu.Item key="export:svg">To SVG</Menu.Item>
+          </SubMenu>
           <Menu.Item key="zoom_in">
             <Icon type="plus-circle-o" /> Zoom in
           </Menu.Item>
           <Menu.Item key="zoom_out">
             <Icon type="minus-circle-o" /> Zoom out
+          </Menu.Item>
+          <Menu.Item key="recenter">
+            <Icon type="select" /> Fit to viewport
           </Menu.Item>
         </Menu>
         <div id="graph-container" />
