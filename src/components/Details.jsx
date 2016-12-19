@@ -15,15 +15,15 @@ const Details = inject('viewStore')(observer((props) => {
       .push(props.viewStore.selectedNodes[i].data);
   }
 
-  return (<div>
+  return (<div id="details">
     <h2>Selection details</h2>
     <h3>Employees</h3>
     <ul>
-      {nodeLists.employee.map(e => <li key={e.id}>{`${e.details.first_name} ${e.details.last_name}`} - <Link to={`/employee/${e.id}`}>recenter</Link></li>)}
+      {nodeLists.employee.map(e => <li key={e.id}>{`${e.details.first_name} ${e.details.last_name}`} - <Link to={`/employee/${e.id}`}>go to</Link></li>)}
     </ul>
     <h3>Competences</h3>
     <ul>
-      {nodeLists.competence.map(c => <li key={c.id}>{c.details.name} - <Link to={`/competence/${c.id}`}>recenter</Link></li>)}
+      {nodeLists.competence.map(c => <li key={c.id}>{c.details.name} - <Link to={`/competence/${c.id}`}>go to</Link></li>)}
     </ul>
   </div>);
 }));

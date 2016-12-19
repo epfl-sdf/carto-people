@@ -37,7 +37,7 @@ export default class SearchBar extends React.Component {
       && <Select
         showSearch
         size="large"
-        style={{ width: '100%', padding: '20px' }}
+        style={{ width: '100%' }}
         onChange={this.handleChange}
         optionFilterProp="children"
         placeholder="Search an employee or competence..."

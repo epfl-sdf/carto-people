@@ -1,6 +1,7 @@
 /* eslint react/prop-types: 0 */
 
 import React from 'react';
+import { Menu, Icon } from 'antd';
 import { inject } from 'mobx-react';
 import cytoscape from 'cytoscape';
 
@@ -20,6 +21,9 @@ class Map extends React.Component {
   constructor() {
     super();
 
+    this.handleMenuClick = this.handleMenuClick.bind(this);
+
+    this.resetLayout = this.resetLayout.bind(this);
     this.renderGraph = this.renderGraph.bind(this);
     this.constructGraph = this.constructGraph.bind(this);
     this.fetchData = this.fetchData.bind(this);
@@ -31,9 +35,19 @@ class Map extends React.Component {
   componentDidUpdate() {
     this.renderGraph();
   }
+  cy = null;
+  resetLayout() {
+    this.cy.layout({
+      name: 'breadthfirst',
+      avoidOverlap: true,
+      circle: true,
+      fit: true,
+      roots: this.cy.filter('.root'),
+    });
+  }
   constructGraph(data) {
     /* START CY INIT */
-    const cy = cytoscape({
+    this.cy = cytoscape({
       container: document.getElementById('graph-container'),
       userPanningEnabled: false,
       pan: 'center',
@@ -52,6 +66,12 @@ class Map extends React.Component {
           'text-outline-color': colors.black,
           color: '#fff',
         })
+        .selector('.root')
+        .css({
+          'border-width': 3,
+          height: 60,
+          width: 60,
+        })
         .selector(':selected')
         .css({
           'border-width': 3,
@@ -60,11 +80,11 @@ class Map extends React.Component {
         })
         .selector('.employee')
         .css({
-          'background-color': '#ecf0f1',
+          'background-color': colors.white,
         })
         .selector('.competence')
         .css({
-          'background-color': '#95a5a6',
+          'background-color': colors.gray,
           'background-image': 'url(/images/brain.svg)',
         })
         .selector('.employee.m')
@@ -95,15 +115,19 @@ class Map extends React.Component {
       },
     });
     /* END CY INIT */
+    this.cy.$(`#${this.props.params.id}`).addClass('root');
 
     /* START CY EVENT MANAGER */
-    cy.on('select', () => {
-      this.props.viewStore.selectedNodes = cy.$(':selected').jsons().filter(e => e.group === 'nodes');
+    this.cy.on('select', () => {
+      this.props.viewStore.selectedNodes = this.cy.$(':selected').jsons().filter(e => e.group === 'nodes');
+    });
+    this.cy.on('unselect', () => {
+      this.props.viewStore.selectedNodes = this.cy.$(':selected').jsons().filter(e => e.group === 'nodes');
     });
 
     let tappedBefore;
     let tappedTimeout;
-    cy.on('tap', (event) => {
+    this.cy.on('tap', (event) => {
       // create a doubleTap event
       const tappedNow = event.cyTarget;
       if (tappedTimeout && tappedBefore) {
@@ -118,42 +142,67 @@ class Map extends React.Component {
       }
     });
 
-    cy.on('doubleTap', 'node', (event) => {
+    this.cy.on('doubleTap', 'node', (event) => {
       const nodeData = event.cyTarget.data();
       const nodeDetails = nodeData.details;
       switch (nodeData.type) {
         case 'employee': {
-          // const competences = nodeDetails.competences.filter(comp => comp.id !== );
+          const competences = nodeDetails.competences.filter(
+            comp => comp.id !== parseInt(this.props.params.id, 10)
+          );
 
-          for (let i = 0; i < nodeDetails.competences.length; i += 1) {
-            cy.add({
+          for (let i = 0; i < competences.length; i += 1) {
+            this.cy.add([{
               group: 'nodes',
               classes: 'competence',
               data: {
-                id: nodeDetails.competences[i].id,
-                label: `${nodeDetails.competences[i].name}`,
+                id: competences[i].id,
+                label: `${competences[i].name}`,
                 type: 'competence',
-                details: nodeDetails.competences[i],
+                details: competences[i],
               },
             }, {
               group: 'edges',
               data: {
-                id: `${nodeData.id}_${nodeDetails.competences[i].id}`,
+                id: `${nodeData.id}_${competences[i].id}`,
                 source: nodeData.id,
-                target: nodeDetails.competences[i].id,
+                target: competences[i].id,
               },
-            });
-            console.log(nodeData.id, nodeDetails.competences[i].id);
+            }]);
           }
           break;
         }
         case 'competence': {
+          const employees = this.props.employeeStore.getEmployeesWithCompetence(nodeData.id);
+
+          for (let i = 0; i < employees.length; i += 1) {
+            this.cy.add([{
+              group: 'nodes',
+              classes: `employee ${employees[i].sex}`,
+              data: {
+                id: employees[i].id,
+                label: `${employees[i].first_name} ${employees[i].last_name}`,
+                type: 'employee',
+                details: employees[i],
+              },
+            }, {
+              group: 'edges',
+              data: {
+                id: `${nodeData.id}_${employees[i].id}`,
+                source: nodeData.id,
+                target: employees[i].id,
+              },
+            }]);
+          }
           break;
         }
         default: {
           break;
         }
       }
+      this.cy.nodes().removeClass('root');
+      event.cyTarget.addClass('root');
+      this.resetLayout();
     });
 
     /* END CY EVENT MANAGER */
@@ -253,6 +302,29 @@ class Map extends React.Component {
 
     return linkedDatas;
   }
+  handleMenuClick(e) {
+    if (this.cy) {
+      switch (e.key) {
+        case 'export': {
+          const url = this.cy.jpg().replace(/^data:image\/[^;]/, 'data:application/octet-stream');
+          window.open(url);
+          break;
+        }
+        case 'zoom_in': {
+          this.cy.zoom(this.cy.zoom() * 1.1);
+          this.cy.center();
+          break;
+        }
+        case 'zoom_out': {
+          this.cy.zoom(this.cy.zoom() / 1.1);
+          this.cy.center();
+          break;
+        }
+        default:
+          break;
+      }
+    }
+  }
   renderGraph() {
     if (this.props.params.id && this.props.params.type) {
       const data = this.constructLinkedData(this.fetchData());
@@ -261,7 +333,20 @@ class Map extends React.Component {
   }
   render() {
     return (this.props.params.id && this.props.params.type
-      ? <div id="graph-container" />
+      ? <div>
+        <Menu mode="horizontal" onClick={this.handleMenuClick}>
+          <Menu.Item key="export">
+            <Icon type="download" /> Export
+          </Menu.Item>
+          <Menu.Item key="zoom_in">
+            <Icon type="plus-circle-o" /> Zoom in
+          </Menu.Item>
+          <Menu.Item key="zoom_out">
+            <Icon type="minus-circle-o" /> Zoom out
+          </Menu.Item>
+        </Menu>
+        <div id="graph-container" />
+      </div>
       : <h2>General mal not implemented yet, please select an employee</h2>);
   }
 }
