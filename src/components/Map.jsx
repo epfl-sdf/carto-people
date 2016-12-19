@@ -31,17 +31,12 @@ class Map extends React.Component {
   componentDidUpdate() {
     this.renderGraph();
   }
-  renderGraph() {
-    if (this.props.params.id && this.props.params.type) {
-      const data = this.constructLinkedData(this.fetchData());
-      this.constructGraph(data);
-    }
-  }
   constructGraph(data) {
     /* START CY INIT */
     const cy = cytoscape({
       container: document.getElementById('graph-container'),
-      panningEnabled: false,
+      userPanningEnabled: false,
+      pan: 'center',
       style: cytoscape.stylesheet()
         .selector('node')
         .css({
@@ -95,8 +90,6 @@ class Map extends React.Component {
         name: 'breadthfirst',
         // whether the tree is directed downwards (or edges can point in any direction if false)
         directed: true,
-        // prevents node overlap, may overflow boundingBox if not enough space
-        avoidOverlap: true,
         // put depths in concentric circles if true, put depths top down if false
         circle: true,
       },
@@ -127,8 +120,40 @@ class Map extends React.Component {
 
     cy.on('doubleTap', 'node', (event) => {
       const nodeData = event.cyTarget.data();
+      const nodeDetails = nodeData.details;
+      switch (nodeData.type) {
+        case 'employee': {
+          // const competences = nodeDetails.competences.filter(comp => comp.id !== );
 
-      this.props.router.push(`/${nodeData.type}/${nodeData.id}`);
+          for (let i = 0; i < nodeDetails.competences.length; i += 1) {
+            cy.add({
+              group: 'nodes',
+              classes: 'competence',
+              data: {
+                id: nodeDetails.competences[i].id,
+                label: `${nodeDetails.competences[i].name}`,
+                type: 'competence',
+                details: nodeDetails.competences[i],
+              },
+            }, {
+              group: 'edges',
+              data: {
+                id: `${nodeData.id}_${nodeDetails.competences[i].id}`,
+                source: nodeData.id,
+                target: nodeDetails.competences[i].id,
+              },
+            });
+            console.log(nodeData.id, nodeDetails.competences[i].id);
+          }
+          break;
+        }
+        case 'competence': {
+          break;
+        }
+        default: {
+          break;
+        }
+      }
     });
 
     /* END CY EVENT MANAGER */
@@ -227,6 +252,12 @@ class Map extends React.Component {
     }
 
     return linkedDatas;
+  }
+  renderGraph() {
+    if (this.props.params.id && this.props.params.type) {
+      const data = this.constructLinkedData(this.fetchData());
+      this.constructGraph(data);
+    }
   }
   render() {
     return (this.props.params.id && this.props.params.type

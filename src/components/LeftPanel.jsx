@@ -1,12 +1,18 @@
 /* eslint react/prop-types: 0 */
 
 import React from 'react';
-import { Col } from 'antd';
+import { Row, Col } from 'antd';
 
+import SearchBar from './SearchBar';
 import Filters from './Filters';
 
-const LeftPanel = () => <Col span={6}>
-  <Filters />
+const LeftPanel = props => <Col xs={24} sm={24} md={4} lg={4}>
+  <Row>
+    <SearchBar params={props.params} router={props.router} />
+  </Row>
+  <Row>
+    <Filters />
+  </Row>
 </Col>;
 
 export default LeftPanel;
