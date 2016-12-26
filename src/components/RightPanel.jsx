@@ -8,14 +8,14 @@ import { Col } from 'antd';
 import Map from './Map';
 import Details from './Details';
 
-const RightPanel = inject('employeeStore', 'competenceStore')(observer((props) => {
-  const { employeeStore, competenceStore } = props;
+const RightPanel = inject('dataStore')(observer((props) => {
+  const { dataStore } = props;
+
   return (<div>
     <Col xs={24} sm={24} md={16} lg={16}>
-      {!employeeStore.isLoading && !competenceStore.isLoading
+      {!dataStore.isLoading
         && <Map
-          employeeStore={employeeStore}
-          competenceStore={competenceStore}
+          dataStore={dataStore}
           params={props.params}
           router={props.router}
         />}

@@ -3,16 +3,14 @@ import ReactDOM from 'react-dom';
 import { Router, Route, browserHistory } from 'react-router';
 import { Provider } from 'mobx-react';
 
-import EmployeeStore from './stores/EmployeeStore';
-import CompetenceStore from './stores/CompetenceStore';
+import DataStore from './stores/DataStore';
 import ViewStore from './stores/ViewStore';
 import App from './App';
 
-const employeeStore = new EmployeeStore();
-const competenceStore = new CompetenceStore();
+const dataStore = new DataStore();
 const viewStore = new ViewStore();
 
-const stores = { employeeStore, competenceStore, viewStore };
+const stores = { dataStore, viewStore };
 
 ReactDOM.render(
   <Provider {...stores} >

@@ -4,9 +4,9 @@ import React from 'react';
 import { Menu, Icon } from 'antd';
 import { inject } from 'mobx-react';
 import cytoscape from 'cytoscape';
+import { intersection } from 'lodash';
 
 const SubMenu = Menu.SubMenu;
-const MenuItemGroup = Menu.ItemGroup;
 
 const colors = {
   blue: '#3498db',
@@ -62,6 +62,7 @@ class Map extends React.Component {
           'border-color': colors.black,
           'border-width': 2,
           padding: '20px',
+          // text style
           'text-size': '20pt',
           content: 'data(label)',
           'text-outline-width': 2,
@@ -104,6 +105,12 @@ class Map extends React.Component {
           'line-color': '#000000',
           'target-arrow-color': '#000000',
           'curve-style': 'bezier',
+          // text style
+          'text-size': '20pt',
+          content: 'data(label)',
+          'text-outline-width': 2,
+          'text-outline-color': colors.black,
+          color: '#fff',
         }),
       elements: data,
       motionBlur: true,
@@ -168,7 +175,7 @@ class Map extends React.Component {
           break;
         }
         case 'competence': {
-          const employees = this.props.employeeStore.getEmployeesWithCompetence(nodeData.id);
+          const employees = this.props.dataStore.getEmployeesWithCompetence(nodeData.id);
 
           for (let i = 0; i < employees.length; i += 1) {
             this.cy.add([{
@@ -205,13 +212,13 @@ class Map extends React.Component {
   fetchData() {
     switch (this.props.params.type) {
       case 'employee': {
-        return this.props.employeeStore.getEmployee(this.props.params.id);
+        return this.props.dataStore.getEmployee(this.props.params.id);
       }
       case 'competence': {
-        return this.props.competenceStore.getCompetence(this.props.params.id);
+        return this.props.dataStore.getCompetence(this.props.params.id);
       }
       default:
-        return [];
+        return this.props.dataStore.employees;
     }
   }
   constructLinkedData(data) {
@@ -266,7 +273,7 @@ class Map extends React.Component {
           },
         });
 
-        const employees = this.props.employeeStore.getEmployeesWithCompetence(this.props.params.id);
+        const employees = this.props.dataStore.getEmployeesWithCompetence(this.props.params.id);
         // iterate through employees for the given competence and add a node + edge
         for (let i = 0; i < employees.length; i += 1) {
           linkedDatas.push({
@@ -291,8 +298,47 @@ class Map extends React.Component {
         }
         break;
       }
-      default:
+      // default is for the main map
+      // nodes are employees and link are common competences between them
+      default: {
+        for (let i = 0; i < data.length; i += 1) {
+          linkedDatas.push({
+            group: 'nodes',
+            classes: `employee ${data[i].sex}`,
+            data: {
+              id: data[i].id,
+              label: `${data[i].first_name} ${data[i].last_name}`,
+              type: 'employee',
+              details: data[i],
+            },
+          });
+        }
+        for (let i = 0; i < data.length; i += 1) {
+          for (let j = 0; j < data.length; j += 1) {
+            // if this is a different employee
+            if (data[j].id !== data[i].id) {
+              // if these employees have a competence in common
+              const inter = intersection(data[j].competences.map(c => c.id), data[i].competences.map(c => c.id));
+              if (inter.length !== 0) {
+                for (let k = 0; k < inter.length; k += 1) {
+                  const comp = this.props.dataStore.getCompetence(inter[k]);
+
+                  linkedDatas.push({
+                    group: 'edges',
+                    data: {
+                      id: `${data[i].id}_${data[j].id}`,
+                      label: comp.name,
+                      source: data[i].id,
+                      target: data[j].id,
+                    },
+                  });
+                }
+              }
+            }
+          }
+        }
         break;
+      }
     }
 
     return linkedDatas;
@@ -333,39 +379,43 @@ class Map extends React.Component {
           this.cy.fit();
           break;
         }
+        case 'back': {
+          this.props.router.push('/');
+          break;
+        }
         default:
           break;
       }
     }
   }
   renderGraph() {
-    if (this.props.params.id && this.props.params.type) {
-      const data = this.constructLinkedData(this.fetchData());
-      this.constructGraph(data);
-    }
+    const data = this.constructLinkedData(this.fetchData());
+    this.constructGraph(data);
   }
   render() {
-    return (this.props.params.id && this.props.params.type
-      ? <div>
-        <Menu mode="horizontal" onClick={this.handleMenuClick}>
-          <SubMenu title={<span><Icon type="download" />Export</span>}>
-            <Menu.Item key="export:jpg">To JPG</Menu.Item>
-            <Menu.Item key="export:png">To PNG</Menu.Item>
-            <Menu.Item key="export:svg">To SVG</Menu.Item>
-          </SubMenu>
-          <Menu.Item key="zoom_in">
-            <Icon type="plus-circle-o" /> Zoom in
+    return (<div>
+      <Menu mode="horizontal" onClick={this.handleMenuClick}>
+        <SubMenu title={<span><Icon type="download" />Export</span>}>
+          <Menu.Item key="export:jpg">To JPG</Menu.Item>
+          <Menu.Item key="export:png">To PNG</Menu.Item>
+          <Menu.Item key="export:svg">To SVG</Menu.Item>
+        </SubMenu>
+        <Menu.Item key="zoom_in">
+          <Icon type="plus-circle-o" /> Zoom in
           </Menu.Item>
-          <Menu.Item key="zoom_out">
-            <Icon type="minus-circle-o" /> Zoom out
+        <Menu.Item key="zoom_out">
+          <Icon type="minus-circle-o" /> Zoom out
           </Menu.Item>
-          <Menu.Item key="recenter">
-            <Icon type="select" /> Fit to viewport
+        <Menu.Item key="recenter">
+          <Icon type="select" /> Fit to viewport
           </Menu.Item>
-        </Menu>
-        <div id="graph-container" />
-      </div>
-      : <h2>General mal not implemented yet, please select an employee</h2>);
+        {this.props.params.type && this.props.params.id &&
+          <Menu.Item key="back" style={{ float: 'Right' }}>
+            <Icon type="rollback" /> Back to main map
+          </Menu.Item>}
+      </Menu>
+      <div id="graph-container" />
+    </div>);
   }
 }
 

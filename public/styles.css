@@ -8,6 +8,6 @@
 }
 
 #details ul li {
-  list-style: disc;
-  list-style-position:inside
+  list-style: none;
+  margin-left: 10px;
 }

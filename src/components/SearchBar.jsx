@@ -7,7 +7,7 @@ import { Select } from 'antd';
 const Option = Select.Option;
 const OptGroup = Select.OptGroup;
 
-@inject('employeeStore', 'competenceStore') @observer
+@inject('dataStore') @observer
 export default class SearchBar extends React.Component {
   constructor() {
     super();
@@ -24,30 +24,32 @@ export default class SearchBar extends React.Component {
     }
   }
   render() {
-    const { employeeStore, competenceStore } = this.props;
-
-    const employees = employeeStore.getEmployees().map(
+    const { dataStore } = this.props;
+    const employees = dataStore.employees.map(
       employee => <Option key={employee.id} value={JSON.stringify({ id: employee.id, type: 'employee' })}>{`${employee.first_name} ${employee.last_name}`}</Option>
     );
-    const competences = competenceStore.getCompetences().map(
+    const competences = dataStore.competences.map(
       competence => <Option key={competence.id} value={JSON.stringify({ id: competence.id, type: 'competence' })}>{competence.name}</Option>
     );
 
-    return !employeeStore.isLoading
-      && <Select
-        showSearch
-        size="large"
-        style={{ width: '100%' }}
-        onChange={this.handleChange}
-        optionFilterProp="children"
-        placeholder="Search an employee or competence..."
-      >
-        <OptGroup label="Employees">
-          {employees}
-        </OptGroup>
-        <OptGroup label="Competences">
-          {competences}
-        </OptGroup>
-      </Select>;
+    return !dataStore.isLoading
+      && <div>
+        <h2>Search</h2>
+        <Select
+          showSearch
+          size="large"
+          style={{ width: '100%' }}
+          onChange={this.handleChange}
+          optionFilterProp="children"
+          placeholder="Search an employee or competence..."
+        >
+          <OptGroup label="Employees">
+            {employees}
+          </OptGroup>
+          <OptGroup label="Competences">
+            {competences}
+          </OptGroup>
+        </Select>
+      </div>;
   }
 }
