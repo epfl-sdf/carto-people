@@ -5,6 +5,8 @@ import axios from 'axios';
 export default class DataStore {
   @observable employees = [];
   @observable competences = [];
+  @observable researchGroups = [];
+  @observable schools = [];
 
   constructor() {
     this.loadEmployees();
@@ -17,12 +19,23 @@ export default class DataStore {
   @action loadEmployees() {
     axios.get('/data/sample.json')
       .then((response) => {
+        this.schools = uniqBy(flatten(response.data.employees.map(emp => emp.school)), 'id');
+        this.researchGroups = uniqBy(flatten(response.data.employees.map(emp => emp.research_group)), 'id');
         this.competences = uniqBy(flatten(response.data.employees.map(emp => emp.competences)), 'id');
         this.employees = response.data.employees;
       })
       .catch((error) => {
         console.log(error);
       });
+  }
+
+  getEmployees(filters = []) {
+    let ret = [...this.employees]; // Copy an array like this.employees.slice()
+    for (let i = 0; i < filters.length; i += 1) {
+      ret = ret.filter(filters[i]);
+    }
+
+    return ret;
   }
 
   getEmployee(employeeId) {
@@ -32,12 +45,6 @@ export default class DataStore {
   getEmployeesWithCompetence(competenceId) {
     return this.employees.filter(
       e => e.competences.map(c => c.id).includes(parseInt(competenceId, 10))
-    );
-  }
-
-  getEmployeesWithCompetences(competenceIds) {
-    return this.employees.filter(
-      e => e.competences.map(c => c.id).includes(parseInt(competenceIds, 10))
     );
   }
 

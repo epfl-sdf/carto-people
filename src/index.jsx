@@ -15,7 +15,7 @@ const stores = { dataStore, viewStore };
 ReactDOM.render(
   <Provider {...stores} >
     <Router history={browserHistory}>
-      <Route path="/" component={App} />
+      <Route path="/" component={App} onLeave={() => viewStore.resetFilters()} />
       <Route path="/:type/:id" component={App} />
     </Router>
   </Provider>,

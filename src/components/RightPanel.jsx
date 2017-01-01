@@ -8,14 +8,15 @@ import { Col } from 'antd';
 import Map from './Map';
 import Details from './Details';
 
-const RightPanel = inject('dataStore')(observer((props) => {
-  const { dataStore } = props;
+const RightPanel = inject('dataStore', 'viewStore')(observer((props) => {
+  const { dataStore, viewStore } = props;
 
   return (<div>
     <Col xs={24} sm={24} md={16} lg={16}>
       {!dataStore.isLoading
         && <Map
           dataStore={dataStore}
+          filters={viewStore.filters}
           params={props.params}
           router={props.router}
         />}

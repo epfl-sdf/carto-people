@@ -63,7 +63,6 @@ class Map extends React.Component {
           'border-width': 2,
           padding: '20px',
           // text style
-          'text-size': '20pt',
           content: 'data(label)',
           'text-outline-width': 2,
           'text-outline-color': colors.black,
@@ -101,15 +100,13 @@ class Map extends React.Component {
         .selector('edge')
         .css({
           width: 2,
-          'target-arrow-shape': 'triangle',
           'line-color': '#000000',
-          'target-arrow-color': '#000000',
           'curve-style': 'bezier',
           // text style
-          'text-size': '20pt',
           content: 'data(label)',
           'text-outline-width': 2,
           'text-outline-color': colors.black,
+          'edge-text-rotation': 'autorotate',
           color: '#fff',
         }),
       elements: data,
@@ -218,7 +215,7 @@ class Map extends React.Component {
         return this.props.dataStore.getCompetence(this.props.params.id);
       }
       default:
-        return this.props.dataStore.employees;
+        return this.props.dataStore.getEmployees(this.props.filters);
     }
   }
   constructLinkedData(data) {

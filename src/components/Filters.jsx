@@ -6,7 +6,7 @@ import { Select, Button } from 'antd';
 
 const Option = Select.Option;
 
-@inject('dataStore') @observer
+@inject('dataStore', 'viewStore') @observer
 export default class Filters extends React.Component {
   render() {
     const { dataStore, params: { id, type } } = this.props;
@@ -18,8 +18,8 @@ export default class Filters extends React.Component {
         key="competence_filter"
         multiple
         style={{ width: '100%' }}
-        placeholder="Select competence(s)"
-        onChange={value => console.log(value)}
+        placeholder="Select the competence(s)"
+        onChange={(selected) => { this.props.viewStore.filters = { type: 'competences', selected }; }}
       >
         {dataStore.competences.map(
           c => <Option key={c.id} value={c.id.toString()}>{c.name}</Option>
@@ -27,7 +27,35 @@ export default class Filters extends React.Component {
       </Select>
       <br />
       <br />
-      <Button key="reset_filter" type="dashed" onClick={() => dataStore.loadEmployees()}>Reset</Button>
+      <p>Employees in research group:</p>
+      <Select
+        allowClear
+        key="research_group_filter"
+        style={{ width: '100%' }}
+        placeholder="Select the research group"
+        onChange={(selected) => { this.props.viewStore.filters = { type: 'research_groups', selected }; }}
+      >
+        {dataStore.researchGroups.map(
+          r => <Option key={r.id} value={r.id.toString()}>{r.name}</Option>
+        )}
+      </Select>
+      <br />
+      <br />
+      <p>Employees in school:</p>
+      <Select
+        allowClear
+        key="school_filter"
+        style={{ width: '100%' }}
+        placeholder="Select the school"
+        onChange={(selected) => { this.props.viewStore.filters = { type: 'schools', selected }; }}
+      >
+        {dataStore.schools.map(
+          s => <Option key={s.id} value={s.id.toString()}>{s.name}</Option>
+        )}
+      </Select>
+      <br />
+      <br />
+      <Button key="reset_filter" type="dashed" onClick={() => { this.props.viewStore.test = Math.random(); }}>Reset</Button>
     </div>;
   }
 }

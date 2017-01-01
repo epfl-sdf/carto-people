@@ -5,6 +5,14 @@
       "first_name": "Morgan",
       "last_name": "Freeman",
       "sex": "m",
+      "research_group": {
+        "id": 1,
+        "name": "Research Group 1"
+      },
+      "school": {
+        "id": 1,
+        "name": "EPFL"
+      },
       "competences": [
         {
           "id": 2,
@@ -21,6 +29,14 @@
       "first_name": "Angelina",
       "last_name": "Jolie",
       "sex": "f",
+      "research_group": {
+        "id": 2,
+        "name": "Research Group 2"
+      },
+      "school": {
+        "id": 2,
+        "name": "Université de Fribourg"
+      },
       "competences": [
         {
           "id": 1,
@@ -33,6 +49,14 @@
       "first_name": "Marilyn",
       "last_name": "Monroe",
       "sex": "f",
+      "research_group": {
+        "id": 2,
+        "name": "Research Group 2"
+      },
+      "school": {
+        "id": 1,
+        "name": "EPFL"
+      },
       "competences": [
         {
           "id": 2,
@@ -49,6 +73,14 @@
       "first_name": "Brad",
       "last_name": "Pitt",
       "sex": "m",
+      "research_group": {
+        "id": 1,
+        "name": "Research Group 1"
+      },
+      "school": {
+        "id": 3,
+        "name": "HES Fribourg"
+      },
       "competences": [
         {
           "id": 3,
@@ -69,6 +101,14 @@
       "first_name": "Johnny",
       "last_name": "Depp",
       "sex": "m",
+      "research_group": {
+        "id": 2,
+        "name": "Research Group 2"
+      },
+      "school": {
+        "id": 3,
+        "name": "HES Fribourg"
+      },
       "competences": [
         {
           "id": 3,
