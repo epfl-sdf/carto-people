@@ -53,9 +53,6 @@ export default class Filters extends React.Component {
           s => <Option key={s.id} value={s.id.toString()}>{s.name}</Option>
         )}
       </Select>
-      <br />
-      <br />
-      <Button key="reset_filter" type="dashed" onClick={() => { this.props.viewStore.test = Math.random(); }}>Reset</Button>
     </div>;
   }
 }
