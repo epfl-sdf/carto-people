@@ -119,6 +119,26 @@
           "name": "C++"
         }
       ]
+    },
+    {
+      "id": 6666,
+      "first_name": "Johnny",
+      "last_name": "Hallyday",
+      "sex": "m",
+      "research_group": {
+        "id": 2,
+        "name": "Research Group 2"
+      },
+      "school": {
+        "id": 1,
+        "name": "EPFL"
+      },
+      "competences": [
+        {
+          "id": 4,
+          "name": "ASM"
+        }
+      ]
     }
   ]
 }

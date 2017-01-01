@@ -4,8 +4,8 @@ export default class ViewStore {
   @observable selectedNodes = [];
   @observable filtersGroup = {
     competences: [],
-    research_groups: undefined,
-    schools: undefined,
+    research_group: undefined,
+    school: undefined,
   }
 
   @computed get filters() {
@@ -17,14 +17,14 @@ export default class ViewStore {
         e => e.competences.map(c => c.id).includes(parseInt(competenceId, 10))
       );
     }
-    if (this.filtersGroup.research_groups) {
+    if (this.filtersGroup.research_group) {
       filters.push(
-        e => e.school.id === parseInt(this.filtersGroup.research_groups, 10)
+        e => e.research_group.id === parseInt(this.filtersGroup.research_group, 10)
       );
     }
-    if (this.filtersGroup.schools) {
+    if (this.filtersGroup.school) {
       filters.push(
-        e => e.school.id === parseInt(this.filtersGroup.schools, 10)
+        e => e.school.id === parseInt(this.filtersGroup.school, 10)
       );
     }
 
@@ -38,8 +38,8 @@ export default class ViewStore {
   @action resetFilters() {
     this.filtersGroup = {
       competences: [],
-      research_groups: undefined,
-      schools: undefined,
+      research_group: undefined,
+      school: undefined,
     };
   }
 }

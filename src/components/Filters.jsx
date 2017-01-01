@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { inject, observer } from 'mobx-react';
-import { Select, Button } from 'antd';
+import { Select } from 'antd';
 
 const Option = Select.Option;
 
@@ -33,7 +33,7 @@ export default class Filters extends React.Component {
         key="research_group_filter"
         style={{ width: '100%' }}
         placeholder="Select the research group"
-        onChange={(selected) => { this.props.viewStore.filters = { type: 'research_groups', selected }; }}
+        onChange={(selected) => { this.props.viewStore.filters = { type: 'research_group', selected }; }}
       >
         {dataStore.researchGroups.map(
           r => <Option key={r.id} value={r.id.toString()}>{r.name}</Option>
@@ -47,7 +47,7 @@ export default class Filters extends React.Component {
         key="school_filter"
         style={{ width: '100%' }}
         placeholder="Select the school"
-        onChange={(selected) => { this.props.viewStore.filters = { type: 'schools', selected }; }}
+        onChange={(selected) => { this.props.viewStore.filters = { type: 'school', selected }; }}
       >
         {dataStore.schools.map(
           s => <Option key={s.id} value={s.id.toString()}>{s.name}</Option>
