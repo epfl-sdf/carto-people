@@ -317,11 +317,12 @@ class Map extends React.Component {
           for (let j = 0; j < data.length; j += 1) {
             // if this is a different employee (different node than itself)
             if (data[j].id !== data[i].id) {
-              // if these employees have a competence in common
+              // get competences in common
               const inter = intersection(
                 data[j].competences.map(c => c.id),
                 data[i].competences.map(c => c.id)
               );
+              // if these employees have a competence in common
               if (inter.length !== 0) {
                 for (let k = 0; k < inter.length; k += 1) {
                   const comp = this.props.dataStore.getCompetence(inter[k]);
@@ -330,20 +331,18 @@ class Map extends React.Component {
                   to remove double edges we check if there's already an edge
                   for the same competence between the two employees
                   */
-                  if (linkedDatas.filter(
+                  const edges = linkedDatas.filter(d => d.group === 'edges');
+
+                  if (edges.filter(
                     edge => (
-                      edge.data.source === data[i].id
-                      && edge.data.target === data[j].id === 0
-                      && edge.data.label === comp.name) ||
-                      (
-                        edge.data.target === data[i].id
-                        && edge.data.source === data[j].id === 0
-                        && edge.data.label === comp.name)
+                      edge.data.id === `${data[i].id}_${data[j].id}_${comp.name}` ||
+                      edge.data.id === `${data[j].id}_${data[i].id}_${comp.name}`
+                    )
                   ).length === 0) {
                     linkedDatas.push({
                       group: 'edges',
                       data: {
-                        id: `${data[i].id}_${data[j].id}`,
+                        id: `${data[i].id}_${data[j].id}_${comp.name}`,
                         label: comp.name,
                         source: data[i].id,
                         target: data[j].id,
