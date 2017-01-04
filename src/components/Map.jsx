@@ -298,6 +298,7 @@ class Map extends React.Component {
       // default is for the main map
       // nodes are employees and link are common competences between them
       default: {
+        // add all employees in the data as a node
         for (let i = 0; i < data.length; i += 1) {
           linkedDatas.push({
             group: 'nodes',
@@ -310,25 +311,45 @@ class Map extends React.Component {
             },
           });
         }
+        // for each node
         for (let i = 0; i < data.length; i += 1) {
+          // check all other nodes
           for (let j = 0; j < data.length; j += 1) {
-            // if this is a different employee
+            // if this is a different employee (different node than itself)
             if (data[j].id !== data[i].id) {
               // if these employees have a competence in common
-              const inter = intersection(data[j].competences.map(c => c.id), data[i].competences.map(c => c.id));
+              const inter = intersection(
+                data[j].competences.map(c => c.id),
+                data[i].competences.map(c => c.id)
+              );
               if (inter.length !== 0) {
                 for (let k = 0; k < inter.length; k += 1) {
                   const comp = this.props.dataStore.getCompetence(inter[k]);
 
-                  linkedDatas.push({
-                    group: 'edges',
-                    data: {
-                      id: `${data[i].id}_${data[j].id}`,
-                      label: comp.name,
-                      source: data[i].id,
-                      target: data[j].id,
-                    },
-                  });
+                  /*
+                  to remove double edges we check if there's already an edge
+                  for the same competence between the two employees
+                  */
+                  if (linkedDatas.filter(
+                    edge => (
+                      edge.data.source === data[i].id
+                      && edge.data.target === data[j].id === 0
+                      && edge.data.label === comp.name) ||
+                      (
+                        edge.data.target === data[i].id
+                        && edge.data.source === data[j].id === 0
+                        && edge.data.label === comp.name)
+                  ).length === 0) {
+                    linkedDatas.push({
+                      group: 'edges',
+                      data: {
+                        id: `${data[i].id}_${data[j].id}`,
+                        label: comp.name,
+                        source: data[i].id,
+                        target: data[j].id,
+                      },
+                    });
+                  }
                 }
               }
             }
