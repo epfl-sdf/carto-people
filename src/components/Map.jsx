@@ -1,5 +1,3 @@
-/* eslint react/prop-types: 0 */
-
 import React from 'react';
 import { Menu, Icon } from 'antd';
 import { inject } from 'mobx-react';

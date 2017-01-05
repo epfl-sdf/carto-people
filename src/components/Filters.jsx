@@ -1,5 +1,3 @@
-/* eslint react/prop-types: 0 */
-
 import React from 'react';
 import { inject, observer } from 'mobx-react';
 import { Select } from 'antd';
