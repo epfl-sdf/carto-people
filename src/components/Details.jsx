@@ -4,7 +4,7 @@ import React from 'react';
 import { Link } from 'react-router';
 import { observer, inject } from 'mobx-react';
 
-const Details = inject('viewStore')(observer((props) => {
+const Details = (props) => {
   const nodeLists = {
     employee: [],
     competence: [],
@@ -26,6 +26,6 @@ const Details = inject('viewStore')(observer((props) => {
       {nodeLists.competence.map(c => <li key={c.id}>{c.details.name} - <Link to={`/competence/${c.id}`}>go to</Link></li>)}
     </ul>
   </div>);
-}));
+};
 
-export default Details;
+export default inject('viewStore')(observer(Details));

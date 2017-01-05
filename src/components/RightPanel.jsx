@@ -8,7 +8,7 @@ import { Col } from 'antd';
 import Map from './Map';
 import Details from './Details';
 
-const RightPanel = inject('dataStore', 'viewStore')(observer((props) => {
+const RightPanel = (props) => {
   const { dataStore, viewStore } = props;
 
   return (<div>
@@ -25,6 +25,6 @@ const RightPanel = inject('dataStore', 'viewStore')(observer((props) => {
       <Details />
     </Col>
   </div>);
-}));
+};
 
-export default RightPanel;
+export default inject('dataStore', 'viewStore')(observer(RightPanel));
