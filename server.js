@@ -2,19 +2,25 @@ const express = require('express');
 const path = require('path');
 const cors = require('cors');
 const compression = require('compression');
-const webpack = require('webpack');
-const webpackConfig = require('./webpack.config');
 
-const compiler = webpack(webpackConfig);
+const isProduction = process.env.NODE_ENV === 'production';
 
 const app = express();
 app.use(compression());
 app.use(cors());
 
-app.use(require('webpack-dev-middleware')(compiler, {
-  noInfo: true, publicPath: webpackConfig.output.publicPath,
-}));
-app.use(require('webpack-hot-middleware')(compiler));
+/* eslint-disable global-require */
+if (!isProduction) {
+  const webpack = require('webpack');
+  const webpackConfig = require('./webpack.config');
+
+  const compiler = webpack(webpackConfig);
+  app.use(require('webpack-dev-middleware')(compiler, {
+    noInfo: true, publicPath: webpackConfig.output.publicPath,
+  }));
+  app.use(require('webpack-hot-middleware')(compiler));
+}
+/* eslint-enable global-require */
 
 // serve static assets normally
 app.use(express.static(path.join(__dirname, 'public'), { index: false }));

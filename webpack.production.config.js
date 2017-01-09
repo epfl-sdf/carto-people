@@ -1,5 +1,4 @@
 /* eslint-disable */
-
 const webpack = require('webpack');
 const path = require('path');
 
@@ -7,11 +6,8 @@ const BUILD_DIR = path.resolve(__dirname, 'public');
 const APP_DIR = path.resolve(__dirname, 'src');
 
 const config = {
-  devtool: 'eval',
-  entry: [
-    'webpack-hot-middleware/client',
-    `${APP_DIR}/index.jsx`,
-  ],
+  devtool: 'cheap-module-source-map',
+  entry: `${APP_DIR}/index.jsx`,
   output: {
     path: BUILD_DIR,
     filename: 'bundle.js',
@@ -21,12 +17,18 @@ const config = {
     extensions: ['', '.jsx', '.js'],
   },
   plugins: [
-    // Ensures consistent build hashes
-    new webpack.optimize.OccurenceOrderPlugin(),
-    // Self-explanatory
-    new webpack.HotModuleReplacementPlugin(),
-    // Used to handle errors more cleanly
-    new webpack.NoErrorsPlugin(),
+    new webpack.DefinePlugin({
+      'process.env': {
+        'NODE_ENV': JSON.stringify('production')
+      }
+    }),
+    new webpack.optimize.UglifyJsPlugin({
+      compress: {
+        warnings: false
+      },
+      comments: false,
+      sourceMap: false
+    }),
   ],
   module: {
     loaders: [
