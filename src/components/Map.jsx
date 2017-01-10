@@ -391,7 +391,7 @@ class Map extends React.Component {
           break;
         }
         case 'recenter': {
-          this.cy.fit();
+          this.cy.fit(10);
           break;
         }
         case 'back': {
