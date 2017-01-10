@@ -42,7 +42,7 @@ class Map extends React.Component {
       name: 'breadthfirst',
       circle: true,
       avoidOverlap: true,
-      roots: this.cy.filter('.root'),
+      roots: this.cy.$(`#${this.props.params.id}`),
     });
   }
   constructGraph(data) {
@@ -380,12 +380,12 @@ class Map extends React.Component {
           alert('Not implemented yet');
           break;
         }
-        case 'zoom_in': {
+        case 'zoom:in': {
           this.cy.zoom(this.cy.zoom() * 1.1);
           this.cy.center();
           break;
         }
-        case 'zoom_out': {
+        case 'zoom:out': {
           this.cy.zoom(this.cy.zoom() / 1.1);
           this.cy.center();
           break;
@@ -415,10 +415,10 @@ class Map extends React.Component {
           <Menu.Item key="export:png">To PNG</Menu.Item>
           <Menu.Item key="export:svg">To SVG</Menu.Item>
         </SubMenu>
-        <Menu.Item key="zoom_in">
+        <Menu.Item key="zoom:in">
           <Icon type="plus-circle-o" /> Zoom in
           </Menu.Item>
-        <Menu.Item key="zoom_out">
+        <Menu.Item key="zoom:out">
           <Icon type="minus-circle-o" /> Zoom out
           </Menu.Item>
         <Menu.Item key="recenter">

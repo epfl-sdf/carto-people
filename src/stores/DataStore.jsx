@@ -13,14 +13,14 @@ export default class DataStore {
   }
 
   @computed get isLoading() {
-    return this.employees.length === 0 || this.competences.length === 0;
+    return this.employees.length === 0;
   }
 
   @action loadEmployees() {
     axios.get('/data/sample.json')
       .then((response) => {
-        this.schools = uniqBy(flatten(response.data.employees.map(emp => emp.school)), 'id');
-        this.researchGroups = uniqBy(flatten(response.data.employees.map(emp => emp.research_group)), 'id');
+        this.schools = uniqBy(response.data.employees.map(emp => emp.school), 'id');
+        this.researchGroups = uniqBy(response.data.employees.map(emp => emp.research_group), 'id');
         this.competences = uniqBy(flatten(response.data.employees.map(emp => emp.competences)), 'id');
         this.employees = response.data.employees;
       })
