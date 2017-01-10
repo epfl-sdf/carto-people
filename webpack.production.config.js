@@ -6,6 +6,12 @@ const BUILD_DIR = path.resolve(__dirname, 'public');
 const APP_DIR = path.resolve(__dirname, 'src');
 
 const config = {
+  /*
+  Note: This is the best option for production because:
+
+  Both bundle.js and bundle.js.map are smallest
+  The correct file name and line number are provided
+  */
   devtool: 'cheap-module-source-map',
   entry: `${APP_DIR}/index.jsx`,
   output: {
@@ -35,7 +41,7 @@ const config = {
       {
         test: /\.jsx?/,
         include: APP_DIR,
-        loaders: ['react-hot', 'babel?' + JSON.stringify({
+        loaders: ['babel?' + JSON.stringify({
           presets: ["es2015", "react"],
           plugins: ["transform-decorators-legacy", "transform-class-properties", [
             "import",
