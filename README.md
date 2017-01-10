@@ -15,26 +15,23 @@
 "express": "^4.13.4", // Development web server
 "lodash": "^4.15.0", // Functional programming
 
-# CartoService project installation guide & description
+# SDF JavaScript boilerplate installation guide & description
 ## 1. Installation of necessary tools
 Install **git** version control system
 > <https://git-scm.com/downloads>
 
-## 2. Pull the project
-In order to pull the project from Git, you must have access to the repo on <https://git.epfl.ch> first.
-Once it's the case, you can simply clone the project locally by using the command:
+## 2. Pull the project TODO MODIFY
+You can simply clone the project locally by using the command:
 ```bash
-git clone https://USERNAME@git.epfl.ch/repo/carto.git
-cd carto
+git clone https://github.com/sdfepfl/javascript-boilerplate.git
+cd javascript-boilerplate
 ```
 
-Where `USERNAME` has to be replaced with your GASPAR username. The clone command will ask for authentification, use your usual GASPAR credentials again.
-
-## 3. Run the installation script
+## 3. Run the installation script TODO MODIFY
 The installation script will take care of installing [NodeJS](https://nodejs.org) and [MySQL Server](http://mysql.com/), as well as setting everything up: 
 
 ```bash
-./scripts/install_server.sh
+./install_server.sh
 ```
 
 Specifically, it'll install NodeJS dependencies required to run the app in a folder named `node_modules`.
@@ -45,31 +42,15 @@ all of this through an SQL file named `db_carto.sql`.
 When the installation process ends, the app will be run in the NodeJS server and available at:
 > <http://localhost:3000>
 
-## 4. Additional NPM commands
+## 4. NPM commands
 
-Most common command, run the app in production mode (calls `start:prod` under the hood):
+Most common command, run the app in development mode (calls `nodemon` under the hood):
 ```bash
 npm start
 ```
 
-Build the client and the server, then run the app in production mode:
-```bash
-npm run start:prod
-```
-Build only the client side of the code:
-```bash
-npm run build:client
-```
-Build only the server side of the code:
-```bash
-npm run build:server
-```
-Build both the client & server side of the code:
-```bash
-npm run build
-```
 ## 5. Project structure
-### Tree representation
+### Tree representation TODO MODIFY
 
 ```
 carto
@@ -105,7 +86,7 @@ carto
 │
 
 ```
-### Details:
+### Details: TODO MODIFY
 
 Name | Type | Description
 --- | --- | ---
@@ -149,9 +130,9 @@ Its main features are the following:
 
   React creates an in-memory data structure cache, computes the resulting differences, and then updates the browser's displayed DOM efficiently.[10] This allows the programmer to write code as if the entire page is rendered on each change while the React libraries only render subcomponents that actually change.
 
-## 7. Components structure
+## 7. Components structure TODO MODIFY
 
-As seen in section [#5. Project structure](#5-project-structure), React components are locatd in the `./modules/` folder.
+As seen in section [#5. Project structure](#5-project-structure), React components are locatd in the `./src/componenents` folder.
 Even if on the surface it seems like all the components are at the same level, internally they are organized as a tree (like in the DOM).
 
 Indeed as detailed in the previous section, React being component-based, they are encapsulated within each other as it would be on an usual HTML document. i.e. The `<p></p>` component being encapsulated into a `<div></div>` componenent.
@@ -175,7 +156,7 @@ App
 
 ```
 
-### Details:
+### Details: TODO MODIFY
 
 Name | Description
 --- | ---
@@ -190,6 +171,6 @@ Name | Description
 *App/RightPanel*/**Carto**| Component where we render the interactive map, this is where the logic is implemented. For more details about the how this library works, check the next section [#7. D3.js library](#7-d3js-library).
 *App/RightPanel/Carto*/**CartoMenu**| Small componenent to have a toolbar on the top, currently only have one action which is to save to custom map but should be easily expanded to more functions.
 
-## 7. D3.js library
+## 7. Cytoscape.js library
 
 *Coming soon*
