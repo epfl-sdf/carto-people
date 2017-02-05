@@ -7,11 +7,13 @@ import { intersection } from 'lodash';
 const SubMenu = Menu.SubMenu;
 
 const colors = {
+  contour: '#E12727',
+  inside: '#F1AE9D',
   blue: '#3498db',
   orange: '#d35400',
   green: '#2ecc71',
   gray: '#7f8c8d',
-  white: '#ecf0f1',
+  white: '#ffffff',
   red: '#e74c3c',
   dark: '#2c3e50',
   black: '#000000',
@@ -54,17 +56,19 @@ class Map extends React.Component {
       style: cytoscape.stylesheet()
         .selector('node')
         .css({
-          height: 40,
-          width: 40,
+          height: 60,
+          width: 60,
           'background-fit': 'cover',
-          'border-color': colors.black,
-          'border-width': 2,
-          padding: '20px',
+          'border-width': 1,
+          borderColor: colors.inside,
+          marginBottom: '5px',
           // text style
           content: 'data(label)',
           'text-outline-width': 2,
-          'text-outline-color': colors.black,
-          color: '#fff',
+          'text-outline-color': colors.contour,
+          'text-margin-y': "-5px",
+          'font-style': "'Open Sans', sans-serif",
+          color: '#fff'
         })
         .selector('.root')
         .css({
@@ -72,40 +76,40 @@ class Map extends React.Component {
           height: 60,
           width: 60,
         })
-        .selector(':selected')
-        .css({
-          'border-width': 3,
-          'border-color': colors.blue,
-          'text-outline-color': colors.blue,
-        })
         .selector('.employee')
         .css({
           'background-color': colors.white,
         })
         .selector('.competence')
         .css({
-          'background-color': colors.gray,
-          'background-image': 'url(/images/brain.svg)',
+          'background-color': colors.white,
+          'background-image': 'url(/images/comp_icon.svg)',
         })
         .selector('.employee.m')
         .css({
-          'background-image': 'url(/images/m.svg)',
+          'background-image': 'url(/images/man_icon.svg)',
         })
         .selector('.employee.f')
         .css({
-          'background-image': 'url(/images/f.svg)',
+          'background-image': 'url(/images/woman_icon.svg)',
+        })
+        .selector(':selected')
+        .css({
+          'border-width': 3,
+          'border-color': colors.contour,
+          'background-color': colors.inside,
         })
         .selector('edge')
         .css({
           width: 2,
-          'line-color': '#000000',
+          'line-color': colors.inside,
           'curve-style': 'bezier',
           // text style
           content: 'data(label)',
           'text-outline-width': 2,
-          'text-outline-color': colors.black,
+          'text-outline-color': colors.contour,
           'edge-text-rotation': 'autorotate',
-          color: '#fff',
+          color: colors.white,
         }),
       elements: data,
       motionBlur: true,
