@@ -20,7 +20,8 @@
     "mobx-react": "^4.0.3",
     "react": "^0.14.7",
     "react-dom": "^0.14.7",
-    "react-router": "^2.0.0"
+    "react-router": "^2.0.0",
+    "http-server": "^0.9.0"
   },
   "devDependencies": {
     "babel-core": "^6.5.1",
@@ -41,6 +42,7 @@
     "style-loader": "^0.13.1",
     "webpack": "^1.14.0",
     "webpack-dev-middleware": "^1.9.0",
-    "webpack-hot-middleware": "^2.13.2"
+    "webpack-hot-middleware": "^2.13.2",
+    "nodemon": "^1.11.0"
   }
 }

@@ -44,16 +44,23 @@ const config = {
       {
         test: /\.jsx?/,
         include: APP_DIR,
-        loaders: ['react-hot', 'babel?' + JSON.stringify({
-          presets: ["es2015", "react"],
-          plugins: ["transform-decorators-legacy", "transform-class-properties", [
-            "import",
-            {
-              "libraryName": "antd",
-              "style": "css"
-            }
-          ]]
-        })]
+        loaders: [
+          'react-hot', 
+          'babel?' + JSON.stringify({
+            presets: ["es2015", "react"],
+            plugins: [
+              "transform-decorators-legacy", 
+              "transform-class-properties", 
+              [
+                "import",
+                {
+                  "libraryName": "antd",
+                  "style": "css"
+                }
+              ]
+            ]
+          })
+        ]
       },
       { test: /\.css$/, loader: 'style-loader!css-loader' },
     ],

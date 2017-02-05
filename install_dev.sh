@@ -1,8 +1,3 @@
-if [ "$EUID" -ne 0 ]
-  then echo "Please run as root"
-  exit
-fi
-
 apt-get update
 
 apt-get -y install curl
@@ -15,8 +10,5 @@ git clone https://github.com/sdfepfl/javascript-boilerplate
 cd javascript-boilerplate
 
 npm install
-npm install -g http-server
-npm install -g nodemon
-webpack --progress --config webpack.production.config.js
 
-nohup http-server public/ -p 80 --cors &
+npm start
