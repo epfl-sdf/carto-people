@@ -48,7 +48,7 @@ class Map extends React.Component {
   }
 
   componentWillUnmount() {
-    clearEvents();
+    this.clearEvents();
   }
 
   clearEvents() {
