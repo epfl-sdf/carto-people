@@ -21,24 +21,40 @@ const colors = {
 
 @inject('viewStore')
 class Map extends React.Component {
+
+  cy = null;
+
   constructor() {
     super();
 
     this.handleMenuClick = this.handleMenuClick.bind(this);
-
     this.resetLayout = this.resetLayout.bind(this);
     this.renderGraph = this.renderGraph.bind(this);
     this.constructGraph = this.constructGraph.bind(this);
     this.fetchData = this.fetchData.bind(this);
     this.constructLinkedData = this.constructLinkedData.bind(this);
   }
+
   componentDidMount() {
+    console.log("mount")
+    this.constructGraph();
     this.renderGraph();
   }
+
   componentDidUpdate() {
+    console.log("update")
+    this.clearGraph();
     this.renderGraph();
   }
-  cy = null;
+
+  componentWillUnmount() {
+    clearEvents();
+  }
+
+  clearEvents() {
+    this.cy.off(['select', 'unselect', 'doubleTap']);
+  }
+
   resetLayout() {
     this.cy.layout({
       name: 'breadthfirst',
@@ -47,89 +63,72 @@ class Map extends React.Component {
       roots: this.cy.$(`#${this.props.params.id}`),
     });
   }
-  constructGraph(data) {
-    /* START CY INIT */
-    this.cy = cytoscape({
-      container: document.getElementById('graph-container'),
-      userPanningEnabled: false,
-      pan: 'center',
-      style: cytoscape.stylesheet()
-        .selector('node')
-        .css({
-          height: 60,
-          width: 60,
-          'background-fit': 'cover',
-          'border-width': 1,
-          borderColor: colors.inside,
-          marginBottom: '5px',
-          // text style
-          content: 'data(label)',
-          'text-outline-width': 2,
-          'text-outline-color': colors.contour,
-          'text-margin-y': "-5px",
-          'font-style': "'Open Sans', sans-serif",
-          color: '#fff'
-        })
-        .selector('.root')
-        .css({
-          'border-width': 3,
-          height: 60,
-          width: 60,
-        })
-        .selector('.employee')
-        .css({
-          'background-color': colors.white,
-        })
-        .selector('.competence')
-        .css({
-          'background-color': colors.white,
-          'background-image': 'url(/images/comp_icon.svg)',
-        })
-        .selector('.employee.m')
-        .css({
-          'background-image': 'url(/images/man_icon.svg)',
-        })
-        .selector('.employee.f')
-        .css({
-          'background-image': 'url(/images/woman_icon.svg)',
-        })
-        .selector(':selected')
-        .css({
-          'border-width': 3,
-          'border-color': colors.contour,
-          'background-color': colors.inside,
-        })
-        .selector('edge')
-        .css({
-          width: 2,
-          'line-color': colors.inside,
-          'curve-style': 'bezier',
-          // text style
-          content: 'data(label)',
-          'text-outline-width': 2,
-          'text-outline-color': colors.contour,
-          'edge-text-rotation': 'autorotate',
-          color: colors.white,
-        }),
-      elements: data,
-      motionBlur: true,
-    });
-    this.cy.$(`#${this.props.params.id}`).addClass('root');
-    this.resetLayout();
-    /* END CY INIT */
 
-    /* START CY EVENT MANAGER */
-    this.cy.on('select', () => {
-      this.props.viewStore.selectedNodes = this.cy.$(':selected').jsons().filter(e => e.group === 'nodes');
-    });
-    this.cy.on('unselect', () => {
-      this.props.viewStore.selectedNodes = this.cy.$(':selected').jsons().filter(e => e.group === 'nodes');
-    });
+  cytoStyleSheet = cytoscape.stylesheet()
+    .selector('node')
+    .css({
+      height: 60,
+      width: 60,
+      'background-fit': 'cover',
+      'border-width': 1,
+      borderColor: colors.inside,
+      marginBottom: '5px',
+      // text style
+      content: 'data(label)',
+      'text-outline-width': 2,
+      'text-outline-color': colors.contour,
+      'text-margin-y': "-5px",
+      'font-style': "'Open Sans', sans-serif",
+      color: '#fff'
+    })
+    .selector('node.root')
+    .css({
+      'border-width': 3,
+      height: 60,
+      width: 60,
+    })
+    .selector('node.employee')
+    .css({
+      'background-color': colors.white,
+    })
+    .selector('node.competence')
+    .css({
+      'background-color': colors.white,
+      'background-image': 'url(/images/comp_icon.svg)',
+    })
+    .selector('node.employee.m')
+    .css({
+      'background-image': 'url(/images/man_icon.svg)',
+    })
+    .selector('node.employee.f')
+    .css({
+      'background-image': 'url(/images/woman_icon.svg)',
+    })
+    .selector('node:selected')
+    .css({
+      'border-width': 3,
+      'border-color': colors.contour,
+      'background-color': colors.inside,
+    })
+    .selector('edge')
+    .css({
+      width: 2,
+      'line-color': colors.inside,
+      'curve-style': 'bezier',
+      // text style
+      content: 'data(label)',
+      'text-outline-width': 2,
+      'text-outline-color': colors.contour,
+      'edge-text-rotation': 'autorotate',
+      color: colors.white,
+    })
 
+  createDoubleTapEvent() {
     let tappedBefore;
     let tappedTimeout;
+
+    // create a doubleTap event
     this.cy.on('tap', (event) => {
-      // create a doubleTap event
       const tappedNow = event.cyTarget;
       if (tappedTimeout && tappedBefore) {
         clearTimeout(tappedTimeout);
@@ -142,65 +141,136 @@ class Map extends React.Component {
         tappedBefore = tappedNow;
       }
     });
+  }
+
+  addComp(data) {
+    this.cy.add({
+      group: 'nodes',
+      classes: 'competence',
+      data: {
+        id: data.id,
+        label: `${data.name}`,
+        type: 'competence',
+        details: data,
+      },
+    })
+  }
+
+  addEmploye(data) {
+    this.cy.add({
+      group: 'nodes',
+      classes: `employee ${data.sex}`,
+      data: {
+        id: data.id,
+        label: `${data.first_name} ${data.last_name}`,
+        type: 'employee',
+        details: data,
+      },
+    })
+  }
+
+  expandCompFromPeople(nodeData) {
+    const competences = nodeData.competences
+
+    for (let i = 0; i < competences.length; i += 1) {
+
+      this.cy.add([{
+          group: 'nodes',
+          classes: 'competence',
+          data: {
+            id: competences[i].id,
+            label: `${competences[i].name}`,
+            type: 'competence',
+            details: competences[i],
+          },
+        }, {
+          group: 'edges',
+          data: {
+            id: `${nodeData.id}_${competences[i].id}`,
+            source: nodeData.id,
+            target: competences[i].id,
+          },
+        }
+      ]);
+    }
+  }
+
+  expandPeopleFromComp(nodeData) {
+    const employees = this.props.dataStore.getEmployeesWithCompetence(nodeData.id);
+
+    for (let i = 0; i < employees.length; i += 1) {
+      this.cy.add([{
+          group: 'nodes',
+          classes: `employee ${employees[i].sex}`,
+          data: {
+            id: employees[i].id,
+            label: `${employees[i].first_name} ${employees[i].last_name}`,
+            type: 'employee',
+            details: employees[i],
+          },
+        }, {
+          group: 'edges',
+          data: {
+            id: `${nodeData.id}_${employees[i].id}`,
+            source: nodeData.id,
+            target: employees[i].id,
+          },
+      }]);
+    }
+  }
+
+  clearGraph() {
+    this.cy.remove(this.cy.elements())
+  }
+
+  constructGraph() {
+
+    /* START CY INIT */
+    this.cy = cytoscape({
+      container: document.getElementById('graph-container'),
+      userPanningEnabled: false,
+      pan: 'center',
+      style: this.cytoStyleSheet,
+      motionBlur: true,
+    });
+
+    this.cy.$(`#${this.props.params.id}`).addClass('root');
+
+    this.resetLayout();
+    /* END CY INIT */
+
+    /* START CY EVENT MANAGER */
+    this.cy.on('select', () => {
+      this.props.viewStore.selectedNodes = this.cy.$(':selected').jsons().filter(e => e.group === 'nodes');
+    });
+
+    this.cy.on('unselect', () => {
+      this.props.viewStore.selectedNodes = this.cy.$(':selected').jsons().filter(e => e.group === 'nodes');
+    });
+
+    this.createDoubleTapEvent()
 
     this.cy.on('doubleTap', 'node', (event) => {
       const nodeData = event.cyTarget.data();
       const nodeDetails = nodeData.details;
+
       switch (nodeData.type) {
+
         case 'employee': {
-          const competences = nodeDetails.competences.filter(
-            comp => comp.id !== parseInt(this.props.params.id, 10)
-          );
-
-          for (let i = 0; i < competences.length; i += 1) {
-            this.cy.add([{
-              group: 'nodes',
-              classes: 'competence',
-              data: {
-                id: competences[i].id,
-                label: `${competences[i].name}`,
-                type: 'competence',
-                details: competences[i],
-              },
-            }, {
-              group: 'edges',
-              data: {
-                id: `${nodeData.id}_${competences[i].id}`,
-                source: nodeData.id,
-                target: competences[i].id,
-              },
-            }]);
-          }
+          this.props.router.push(`/employee/${nodeData.id}`)
           break;
         }
+
         case 'competence': {
-          const employees = this.props.dataStore.getEmployeesWithCompetence(nodeData.id);
-
-          for (let i = 0; i < employees.length; i += 1) {
-            this.cy.add([{
-              group: 'nodes',
-              classes: `employee ${employees[i].sex}`,
-              data: {
-                id: employees[i].id,
-                label: `${employees[i].first_name} ${employees[i].last_name}`,
-                type: 'employee',
-                details: employees[i],
-              },
-            }, {
-              group: 'edges',
-              data: {
-                id: `${nodeData.id}_${employees[i].id}`,
-                source: nodeData.id,
-                target: employees[i].id,
-              },
-            }]);
-          }
+          this.props.router.push(`/competence/${nodeData.id}`)
           break;
         }
+
         default: {
           break;
         }
       }
+
       this.cy.nodes().removeClass('root');
       event.cyTarget.addClass('root');
       this.resetLayout();
@@ -208,6 +278,7 @@ class Map extends React.Component {
 
     /* END CY EVENT MANAGER */
   }
+
   fetchData() {
     switch (this.props.params.type) {
       case 'employee': {
@@ -220,148 +291,59 @@ class Map extends React.Component {
         return this.props.dataStore.getEmployees(this.props.filters);
     }
   }
+
   constructLinkedData(data) {
-    const linkedDatas = [];
 
     switch (this.props.params.type) {
-      case 'employee': {
-        linkedDatas.push({
-          group: 'nodes',
-          classes: `employee ${data.sex}`,
-          data: {
-            id: data.id,
-            label: `${data.first_name} ${data.last_name}`,
-            type: 'employee',
-            details: data,
-          },
-        });
-
-        // iterate through competences for the given employee and add a node + edge
-        for (let i = 0; i < data.competences.length; i += 1) {
-          linkedDatas.push({
-            group: 'nodes',
-            classes: 'competence',
-            data: {
-              id: data.competences[i].id,
-              label: `${data.competences[i].name}`,
-              type: 'competence',
-              details: data.competences[i],
-            },
-          });
-
-          linkedDatas.push({
-            group: 'edges',
-            data: {
-              id: `${data.id}_${data.competences[i].id}`,
-              source: data.id,
-              target: data.competences[i].id,
-            },
-          });
-        }
+      case 'employee': 
+        this.addEmploye(data)
+        this.expandCompFromPeople(data)
         break;
-      }
-      case 'competence': {
-        linkedDatas.push({
-          group: 'nodes',
-          classes: 'competence',
-          data: {
-            id: data.id,
-            label: `${data.name}`,
-            type: 'competence',
-            details: data,
-          },
-        });
-
-        const employees = this.props.dataStore.getEmployeesWithCompetence(this.props.params.id);
-        // iterate through employees for the given competence and add a node + edge
-        for (let i = 0; i < employees.length; i += 1) {
-          linkedDatas.push({
-            group: 'nodes',
-            classes: `employee ${employees[i].sex}`,
-            data: {
-              id: employees[i].id,
-              label: `${employees[i].first_name} ${employees[i].last_name}`,
-              type: 'employee',
-              details: employees[i],
-            },
-          });
-
-          linkedDatas.push({
-            group: 'edges',
-            data: {
-              id: `${data.id}_${employees[i].id}`,
-              source: data.id,
-              target: employees[i].id,
-            },
-          });
-        }
+      case 'competence': 
+        this.addComp(data)
+        this.expandPeopleFromComp(data)
         break;
-      }
       // default is for the main map
       // nodes are employees and link are common competences between them
-      default: {
-        // add all employees in the data as a node
+      default:
         for (let i = 0; i < data.length; i += 1) {
-          linkedDatas.push({
-            group: 'nodes',
-            classes: `employee ${data[i].sex}`,
-            data: {
-              id: data[i].id,
-              label: `${data[i].first_name} ${data[i].last_name}`,
-              type: 'employee',
-              details: data[i],
-            },
-          });
+          this.addEmploye(data[i])
         }
+
         // for each node
         for (let i = 0; i < data.length; i += 1) {
-          // check all other nodes
-          for (let j = 0; j < data.length; j += 1) {
-            // if this is a different employee (different node than itself)
-            if (data[j].id !== data[i].id) {
-              // get competences in common
-              const inter = intersection(
-                data[j].competences.map(c => c.id),
-                data[i].competences.map(c => c.id)
-              );
-              // if these employees have a competence in common
-              if (inter.length !== 0) {
-                for (let k = 0; k < inter.length; k += 1) {
-                  const comp = this.props.dataStore.getCompetence(inter[k]);
+          // check other next nodes
+          for (let j = i + 1; j < data.length; j += 1) {
 
-                  /*
-                  to remove double edges we check if there's already an edge
-                  for the same competence between the two employees
-                  */
-                  const edges = linkedDatas.filter(d => d.group === 'edges');
+            // get competences in common
+            const inter = intersection(
+              data[j].competences.map(c => c.id),
+              data[i].competences.map(c => c.id)
+            );
 
-                  if (edges.filter(
-                    edge => (
-                      edge.data.id === `${data[i].id}_${data[j].id}_${comp.name}` ||
-                      edge.data.id === `${data[j].id}_${data[i].id}_${comp.name}`
-                    )
-                  ).length === 0) {
-                    linkedDatas.push({
-                      group: 'edges',
-                      data: {
-                        id: `${data[i].id}_${data[j].id}_${comp.name}`,
-                        label: comp.name,
-                        source: data[i].id,
-                        target: data[j].id,
-                      },
-                    });
-                  }
-                }
+            if (inter.length !== 0) {
+              for (let k = 0; k < inter.length; k += 1) {
+                const comp = this.props.dataStore.getCompetence(inter[k]);
+
+                this.cy.add({
+                  group: 'edges',
+                  data: {
+                    id: `${data[i].id}_${data[j].id}_${comp.name}`,
+                    label: comp.name,
+                    source: data[i].id,
+                    target: data[j].id,
+                  },
+                });
               }
             }
+
           }
         }
-        break;
-      }
-    }
 
-    return linkedDatas;
+        break;
+    }
   }
+
   handleMenuClick(e) {
     if (this.cy) {
       switch (e.key) {
@@ -407,10 +389,12 @@ class Map extends React.Component {
       }
     }
   }
+
   renderGraph() {
-    const data = this.constructLinkedData(this.fetchData());
-    this.constructGraph(data);
+    this.constructLinkedData(this.fetchData());
+    this.resetLayout()
   }
+
   render() {
     return (<div>
       <Menu mode="horizontal" onClick={this.handleMenuClick}>
