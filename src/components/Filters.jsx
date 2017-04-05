@@ -7,7 +7,7 @@ const Option = Select.Option;
 const Filters = ({ viewStore, dataStore, params: { id, type } }) => {
   return !dataStore.isLoading && !id && !type && <div>
     <h2>Filters</h2>
-    <p>Employees with competences:</p>
+    <p>Competences:</p>
     <Select
       key="competence_filter"
       multiple
@@ -21,7 +21,7 @@ const Filters = ({ viewStore, dataStore, params: { id, type } }) => {
     </Select>
     <br />
     <br />
-    <p>Employees in research group:</p>
+    <p>Research groups:</p>
     <Select
       allowClear
       key="research_group_filter"
@@ -35,7 +35,7 @@ const Filters = ({ viewStore, dataStore, params: { id, type } }) => {
     </Select>
     <br />
     <br />
-    <p>Employees in school:</p>
+    <p>Schools:</p>
     <Select
       allowClear
       key="school_filter"
