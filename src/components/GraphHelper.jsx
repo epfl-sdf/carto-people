@@ -3,10 +3,12 @@ import cytoscape from 'cytoscape';
 const colors = {
   contour: '#E12727',
   inside: '#F1AE9D',
+  lines: '#C0BAB9',
+  lines2: '#F3E2DE',
   blue: '#3498db',
   orange: '#d35400',
   green: '#2ecc71',
-  gray: '#7f8c8d',
+  gray: '#EAEAEA',
   white: '#ffffff',
   red: '#e74c3c',
   dark: '#2c3e50',
@@ -191,21 +193,22 @@ export default class GraphHelper {
     .css({
       height: 60,
       width: 60,
+      'border-width': 4,
       'background-fit': 'cover',
-      'border-width': 1,
       borderColor: colors.inside,
       marginBottom: '5px',
       // text style
       content: 'data(label)',
-      'text-outline-width': 2,
-      'text-outline-color': colors.contour,
+      // 'text-outline-width': 2,
+      // 'text-outline-color': colors.contour,
       'text-margin-y': "-5px",
       'font-style': "'Open Sans', sans-serif",
-      color: '#fff'
+      color: colors.contour,
+      "font-size": 24,
     })
     .selector('node.root')
     .css({
-      'border-width': 3,
+      'border-width': 4,
       height: 60,
       width: 60,
     })
@@ -234,15 +237,17 @@ export default class GraphHelper {
     })
     .selector('edge')
     .css({
-      width: 2,
-      'line-color': colors.inside,
+      width: 3,
+      'line-color': colors.gray,
       'curve-style': 'bezier',
       // text style
       content: 'data(label)',
-      'text-outline-width': 2,
-      'text-outline-color': colors.contour,
+      'letter-spacing': '3px',
+      //'text-outline-width': 1,
+      //'text-outline-color': colors.contour,
       'edge-text-rotation': 'autorotate',
-      color: colors.white,
+      color: colors.contour,
+      "font-size": 24,
     })
 
 
