@@ -164,6 +164,14 @@ class Map extends React.Component {
         break;
       }
       case 'back': {
+        this.props.router.goBack();
+        break;
+      }
+      case 'forward': {
+        this.props.router.goForward();
+        break;
+      }
+      case 'Origin': {
         this.props.router.push('/');
         break;
       }
@@ -190,12 +198,18 @@ class Map extends React.Component {
           </Menu.Item>
         <Menu.Item key="zoom:out">
           <Icon type="minus-circle-o" /> Zoom out
-          </Menu.Item>
+        </Menu.Item>
         <Menu.Item key="recenter">
-          <Icon type="select" /> Fit to viewport
-          </Menu.Item>
+          <Icon type="select" /> Fit to view
+        </Menu.Item>
+        <Menu.Item key="back">
+          <Icon type="arrow-left" /> Previous
+        </Menu.Item>
+        <Menu.Item key="forward">
+          <Icon type="arrow-right" /> Forward
+        </Menu.Item>
         {this.props.params.type && this.props.params.id &&
-          <Menu.Item key="back" style={{ float: 'Right' }}>
+          <Menu.Item key="Origin" style={{ float: 'Right' }}>
             <Icon type="rollback" /> Back to main map
           </Menu.Item>}
       </Menu>
