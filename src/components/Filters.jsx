@@ -16,7 +16,7 @@ const Filters = ({ viewStore, dataStore, params: { id, type } }) => {
       onChange={(selected) => { viewStore.filters = { type: 'keywords', selected }; }}
     >
       {dataStore.keywords.map(
-        c => <Option key={c.id} value={c.id.toString()}>{c.name}</Option>
+        c => <Option key={c.id} value={c.id.toString()}>{c.key}</Option>
       )}
     </Select>
     <br />

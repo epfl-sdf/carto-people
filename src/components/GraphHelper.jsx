@@ -116,7 +116,7 @@ export default class GraphHelper {
         type: 'competence',
         details: data,
       },
-    })
+    });
   }
 
   addEmploye(data) {
@@ -129,15 +129,16 @@ export default class GraphHelper {
         type: 'employee',
         details: data,
       },
-    })
+    });
   }
 
   expandCompFromPeople(nodeData) {
-    const keywords = nodeData.keywords
+    const keywords = nodeData.keywords;
 
     for (let i = 0; i < keywords.length; i += 1) {
 
-      this.cy.add([{
+      this.cy.add([
+        {
           group: 'nodes',
           classes: 'competence',
           data: {
@@ -153,7 +154,7 @@ export default class GraphHelper {
             source: nodeData.id,
             target: keywords[i].id,
           },
-        }
+        },
       ]);
     }
   }
@@ -163,21 +164,21 @@ export default class GraphHelper {
 
     for (let i = 0; i < employees.length; i += 1) {
       this.cy.add([{
-          group: 'nodes',
-          classes: `employee ${employees[i].sex === '1' ? 'm' : 'f'}`,
-          data: {
-            id: employees[i].id,
-            label: `${employees[i].name} ${employees[i].lastname}`,
-            type: 'employee',
-            details: employees[i],
-          },
-        }, {
-          group: 'edges',
-          data: {
-            id: `${nodeData.id}_${employees[i].id}`,
-            source: nodeData.id,
-            target: employees[i].id,
-          },
+        group: 'nodes',
+        classes: `employee ${employees[i].sex === '1' ? 'm' : 'f'}`,
+        data: {
+          id: employees[i].id,
+          label: `${employees[i].name} ${employees[i].lastname}`,
+          type: 'employee',
+          details: employees[i],
+        },
+      }, {
+        group: 'edges',
+        data: {
+          id: `${nodeData.id}_${employees[i].id}`,
+          source: nodeData.id,
+          target: employees[i].id,
+        },
       }]);
     }
   }

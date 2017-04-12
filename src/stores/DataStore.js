@@ -19,7 +19,10 @@ export default class DataStore {
   @action loadEmployees() {
     axios.get('/data/realTest.json')
       .then((response) => {
-        this.schools = uniqBy(response.data.People.map(emp => emp.school), 'id');
+        const uniqSchools = uniqBy(response.data.People.map(emp => emp.school), 'name');
+        const schoolMap = uniqSchools
+          .reduce((acc, value, i) => ({ ...acc, [value.name]: i }), {});
+        this.schools = uniqSchools.map((value, i) => ({ name: value.name, id: i }));
 
         // When research groups are back :
         // uniqBy(response.data.employees.map(emp => emp.research_group), 'id');
@@ -27,18 +30,20 @@ export default class DataStore {
 
         const uniqueKeywords = uniqBy(flatten(
           response.data.People.map(emp => (emp.keywords ? emp.keywords : []))
-        ));
+        ), 'key');
 
         const keywordMap = uniqueKeywords
-          .reduce((acc, value, i) => ({ ...acc, [value.key]: i }), {});
+          .reduce((acc, value, i) => ({ ...acc, [value.key]: i + 1000 }), {});
 
-        this.keywords = uniqueKeywords.map((value, i) => ({ key: value.key, id: i }));
+        this.keywords = uniqueKeywords.map((value, i) => ({ key: value.key, id: i + 1000 }));
 
         this.employees = response.data.People.map((emp) => {
           if (emp.keywords) {
             const newKeywords = emp.keywords
               .map(({ key }) => ({ id: keywordMap[key], key }));
-            return { ...emp, keywords: newKeywords };
+            const school = { id: schoolMap[emp.school.name], name: emp.school.name };
+
+            return { ...emp, keywords: newKeywords, school };
           }
           return Object.assign({}, emp, { keywords: [] });
         });
