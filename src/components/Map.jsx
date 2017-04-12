@@ -83,14 +83,13 @@ class Map extends React.Component {
     for (let i = 0; i < data.length; i += 1) {
       // check other next nodes
       for (let j = i + 1; j < data.length; j += 1) {
-
-        // get competences in common
+        // get keywords in common
         const inter = intersection(
-          data[j].competences.map(c => c.id),
-          data[i].competences.map(c => c.id)
+          data[j].keywords.map(c => c.id),
+          data[i].keywords.map(c => c.id)
         );
 
-        // build edge per intersecting competences
+        // build edge per intersecting keywords
         if (inter.length !== 0) {
           for (let k = 0; k < inter.length; k += 1) {
             const comp = this.props.dataStore.getCompetence(inter[k]);
@@ -116,7 +115,7 @@ class Map extends React.Component {
         break;
       }
       // default is for the main map
-      // nodes are employees and link are common competences between them
+      // nodes are employees and link are common keywords between them
       default: {
         
         for (let i = 0; i < data.length; i += 1) {

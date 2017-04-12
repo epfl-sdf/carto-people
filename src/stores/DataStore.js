@@ -4,7 +4,7 @@ import axios from 'axios';
 
 export default class DataStore {
   @observable employees = [];
-  @observable competences = [];
+  @observable keywords = [];
   @observable researchGroups = [];
   @observable schools = [];
 
@@ -17,12 +17,31 @@ export default class DataStore {
   }
 
   @action loadEmployees() {
-    axios.get('/data/sample.json')
+    axios.get('/data/realTest.json')
       .then((response) => {
-        this.schools = uniqBy(response.data.employees.map(emp => emp.school), 'id');
-        this.researchGroups = uniqBy(response.data.employees.map(emp => emp.research_group), 'id');
-        this.competences = uniqBy(flatten(response.data.employees.map(emp => emp.competences)), 'id');
-        this.employees = response.data.employees;
+        this.schools = uniqBy(response.data.People.map(emp => emp.school), 'id');
+
+        // When research groups are back :
+        // uniqBy(response.data.employees.map(emp => emp.research_group), 'id');
+        this.researchGroups = [];
+
+        const uniqueKeywords = uniqBy(flatten(
+          response.data.People.map(emp => (emp.keywords ? emp.keywords : []))
+        ));
+
+        const keywordMap = uniqueKeywords
+          .reduce((acc, value, i) => ({ ...acc, [value.key]: i }), {});
+
+        this.keywords = uniqueKeywords.map((value, i) => ({ key: value.key, id: i }));
+
+        this.employees = response.data.People.map((emp) => {
+          if (emp.keywords) {
+            const newKeywords = emp.keywords
+              .map(({ key }) => ({ id: keywordMap[key], key }));
+            return { ...emp, keywords: newKeywords };
+          }
+          return Object.assign({}, emp, { keywords: [] });
+        });
       })
       .catch((error) => {
         console.log(error);
@@ -44,11 +63,11 @@ export default class DataStore {
 
   getEmployeesWithCompetence(competenceId) {
     return this.employees.filter(
-      e => e.competences.map(c => c.id).includes(parseInt(competenceId, 10))
+      e => e.keywords.map(c => c.id).includes(parseInt(competenceId, 10))
     );
   }
 
   getCompetence(id) {
-    return this.competences.find(c => c.id === parseInt(id, 10));
+    return this.keywords.find(c => c.id === parseInt(id, 10));
   }
 }

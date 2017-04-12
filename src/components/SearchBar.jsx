@@ -26,7 +26,7 @@ export default class SearchBar extends React.Component {
     const employees = dataStore.getEmployees().map(
       employee => <Option key={employee.id} value={JSON.stringify({ id: employee.id, type: 'employee' })}>{`${employee.first_name} ${employee.last_name}`}</Option>
     );
-    const competences = dataStore.competences.map(
+    const keywords = dataStore.keywords.map(
       competence => <Option key={competence.id} value={JSON.stringify({ id: competence.id, type: 'competence' })}>{competence.name}</Option>
     );
 
@@ -44,8 +44,8 @@ export default class SearchBar extends React.Component {
           <OptGroup label="Employees">
             {employees}
           </OptGroup>
-          <OptGroup label="Competences">
-            {competences}
+          <OptGroup label="keywords">
+            {keywords}
           </OptGroup>
         </Select>
       </div>;

@@ -3,7 +3,7 @@ import { observable, computed, action } from 'mobx';
 export default class ViewStore {
   @observable selectedNodes = [];
   @observable filtersGroup = {
-    competences: [],
+    keywords: [],
     research_group: undefined,
     school: undefined,
   }
@@ -11,10 +11,10 @@ export default class ViewStore {
   @computed get filters() {
     const filters = [];
 
-    for (let i = 0; i < this.filtersGroup.competences.length; i += 1) {
-      const competenceId = this.filtersGroup.competences[i];
+    for (let i = 0; i < this.filtersGroup.keywords.length; i += 1) {
+      const competenceId = this.filtersGroup.keywords[i];
       filters.push(
-        e => e.competences.map(c => c.id).includes(parseInt(competenceId, 10))
+        e => e.keywords.map(c => c.id).includes(parseInt(competenceId, 10))
       );
     }
     if (this.filtersGroup.research_group) {
@@ -37,7 +37,7 @@ export default class ViewStore {
 
   @action resetFilters() {
     this.filtersGroup = {
-      competences: [],
+      keywords: [],
       research_group: undefined,
       school: undefined,
     };

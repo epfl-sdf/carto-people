@@ -7,15 +7,15 @@ const Option = Select.Option;
 const Filters = ({ viewStore, dataStore, params: { id, type } }) => {
   return !dataStore.isLoading && !id && !type && <div>
     <h2>Filters</h2>
-    <p>Competences:</p>
+    <p>keywords:</p>
     <Select
       key="competence_filter"
       multiple
       style={{ width: '100%' }}
       placeholder="Select the competence(s)"
-      onChange={(selected) => { viewStore.filters = { type: 'competences', selected }; }}
+      onChange={(selected) => { viewStore.filters = { type: 'keywords', selected }; }}
     >
-      {dataStore.competences.map(
+      {dataStore.keywords.map(
         c => <Option key={c.id} value={c.id.toString()}>{c.name}</Option>
       )}
     </Select>

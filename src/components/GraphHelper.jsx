@@ -93,10 +93,11 @@ export default class GraphHelper {
   }
 
   addCompEdge(comp, data1, data2) {
+    console.warn(comp);
     this.cy.add({
       group: 'edges',
       data: {
-        id: `${data1.id}_${data2.id}_${comp.name}`,
+        id: `${data1.id}_${data2.id}_${comp.key}`,
         label: comp.name,
         source: data1.id,
         target: data2.id,
@@ -105,12 +106,13 @@ export default class GraphHelper {
   }
 
   addComp(data) {
+    console.log(data);
     this.cy.add({
       group: 'nodes',
       classes: 'competence',
       data: {
         id: data.id,
-        label: `${data.name}`,
+        label: `${data.key}`,
         type: 'competence',
         details: data,
       },
@@ -120,10 +122,10 @@ export default class GraphHelper {
   addEmploye(data) {
     this.cy.add({
       group: 'nodes',
-      classes: `employee ${data.sex}`,
+      classes: `employee ${data.sex === '1' ? 'm' : 'f'}`,
       data: {
         id: data.id,
-        label: `${data.first_name} ${data.last_name}`,
+        label: `${data.name} ${data.lastname}`,
         type: 'employee',
         details: data,
       },
@@ -131,25 +133,25 @@ export default class GraphHelper {
   }
 
   expandCompFromPeople(nodeData) {
-    const competences = nodeData.competences
+    const keywords = nodeData.keywords
 
-    for (let i = 0; i < competences.length; i += 1) {
+    for (let i = 0; i < keywords.length; i += 1) {
 
       this.cy.add([{
           group: 'nodes',
           classes: 'competence',
           data: {
-            id: competences[i].id,
-            label: `${competences[i].name}`,
+            id: keywords[i].id,
+            label: `${keywords[i].key}`,
             type: 'competence',
-            details: competences[i],
+            details: keywords[i],
           },
         }, {
           group: 'edges',
           data: {
-            id: `${nodeData.id}_${competences[i].id}`,
+            id: `${nodeData.id}_${keywords[i].id}`,
             source: nodeData.id,
-            target: competences[i].id,
+            target: keywords[i].id,
           },
         }
       ]);
@@ -162,10 +164,10 @@ export default class GraphHelper {
     for (let i = 0; i < employees.length; i += 1) {
       this.cy.add([{
           group: 'nodes',
-          classes: `employee ${employees[i].sex}`,
+          classes: `employee ${employees[i].sex === '1' ? 'm' : 'f'}`,
           data: {
             id: employees[i].id,
-            label: `${employees[i].first_name} ${employees[i].last_name}`,
+            label: `${employees[i].name} ${employees[i].lastname}`,
             type: 'employee',
             details: employees[i],
           },
