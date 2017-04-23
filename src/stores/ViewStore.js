@@ -4,7 +4,7 @@ export default class ViewStore {
   @observable selectedNodes = [];
   @observable filtersGroup = {
     keywords: [],
-    research_group: undefined,
+    researchGroups: undefined,
     school: undefined,
   }
 
@@ -17,10 +17,9 @@ export default class ViewStore {
         e => e.keywords.map(c => c.id).includes(parseInt(competenceId, 10))
       );
     }
-    if (this.filtersGroup.research_group) {
-      filters.push(
-        e => e.research_group.id === parseInt(this.filtersGroup.research_group, 10)
-      );
+    if (this.filtersGroup.researchGroups) {
+      filters.push(e => e.researchGroups
+      .filter(rg => rg.id === parseInt(this.filtersGroup.researchGroups, 10)).length > 0);
     }
     if (this.filtersGroup.school) {
       filters.push(
@@ -38,7 +37,7 @@ export default class ViewStore {
   @action resetFilters() {
     this.filtersGroup = {
       keywords: [],
-      research_group: undefined,
+      researchGroups: undefined,
       school: undefined,
     };
   }

@@ -27,10 +27,10 @@ const Filters = ({ viewStore, dataStore, params: { id, type } }) => {
       key="research_group_filter"
       style={{ width: '100%' }}
       placeholder="Select the research group"
-      onChange={(selected) => { viewStore.filters = { type: 'research_group', selected }; }}
+      onChange={(selected) => { viewStore.filters = { type: 'researchGroups', selected }; }}
     >
       {dataStore.researchGroups.map(
-        r => <Option key={r.id} value={r.id.toString()}>{r.name}</Option>
+        r => <Option key={r.id} value={r.id.toString()}>{r.key}</Option>
       )}
     </Select>
     <br />

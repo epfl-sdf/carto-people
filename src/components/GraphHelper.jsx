@@ -94,13 +94,17 @@ export default class GraphHelper {
 
   addCompEdge(comp, data1, data2) {
     console.warn(comp);
+
+    const id1 = Number(data1.id) > Number(data2.id) ? data1.id : data2.id;
+    const id2 = Number(data2.id) > Number(data1.id) ? data1.id : data2.id;
+
     this.cy.add({
       group: 'edges',
       data: {
-        id: `${data1.id}_${data2.id}_${comp.key}`,
+        id: `${id1}_${id2}`,
         label: comp.name,
-        source: data1.id,
-        target: data2.id,
+        source: id1,
+        target: id2,
       },
     });
   }

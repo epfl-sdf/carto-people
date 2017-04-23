@@ -26,7 +26,14 @@ export default class DataStore {
 
         // When research groups are back :
         // uniqBy(response.data.employees.map(emp => emp.research_group), 'id');
-        this.researchGroups = [];
+        const uniqueRG = uniqBy(flatten(
+          response.data.People.map(emp => (emp.research_group ? emp.research_group : []))
+        ), 'key');
+
+        const rgMap = uniqueRG
+          .reduce((acc, value, i) => ({ ...acc, [value.key]: i + 2000 }), {});
+
+        this.researchGroups = uniqueRG.map((value, i) => ({ key: value.key, id: i + 2000 }));
 
         const uniqueKeywords = uniqBy(flatten(
           response.data.People.map(emp => (emp.keywords ? emp.keywords : []))
@@ -38,14 +45,24 @@ export default class DataStore {
         this.keywords = uniqueKeywords.map((value, i) => ({ key: value.key, id: i + 1000 }));
 
         this.employees = response.data.People.map((emp) => {
-          if (emp.keywords) {
-            const newKeywords = emp.keywords
-              .map(({ key }) => ({ id: keywordMap[key], key }));
-            const school = { id: schoolMap[emp.school.name], name: emp.school.name };
+          let newRG = [];
+          let newKeywords = [];
+          let school = {};
 
-            return { ...emp, keywords: newKeywords, school };
+          if (emp.research_group) {
+            newRG = emp.research_group
+              .map(({ key }) => ({ id: rgMap[key], key }));
           }
-          return Object.assign({}, emp, { keywords: [] });
+
+          if (emp.school) {
+            school = { id: schoolMap[emp.school.name], name: emp.school.name };
+          }
+
+          if (emp.keywords) {
+            newKeywords = emp.keywords
+              .map(({ key }) => ({ id: keywordMap[key], key }));
+          }
+          return { ...emp, keywords: newKeywords, researchGroups: newRG, school };
         });
       })
       .catch((error) => {
