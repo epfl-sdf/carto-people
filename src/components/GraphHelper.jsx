@@ -18,9 +18,6 @@ const colors = {
 export default class GraphHelper {
   cy = null
 
-  constructor() {
-  }
-
   initGraph(rootid) {
     this.cy = cytoscape({
       container: document.getElementById('graph-container'),
@@ -73,7 +70,7 @@ export default class GraphHelper {
   }
 
   setupEvents(onSelect, onUnSelect, onDoubleTap) {
-    this.createDoubleTapEvent()
+    this.createDoubleTapEvent();
     this.cy.on('select', onSelect);
     this.cy.on('unselect', onUnSelect);
     this.cy.on('doubleTap', 'node', onDoubleTap);
@@ -87,6 +84,7 @@ export default class GraphHelper {
     this.cy.layout({
       name: 'breadthfirst',
       circle: true,
+      spacingFactor: 3,
       avoidOverlap: true,
       roots: this.cy.$(`#${rootid}`),
     });
@@ -140,7 +138,6 @@ export default class GraphHelper {
     const keywords = nodeData.keywords;
 
     for (let i = 0; i < keywords.length; i += 1) {
-
       this.cy.add([
         {
           group: 'nodes',
@@ -192,7 +189,7 @@ export default class GraphHelper {
   }
 
   clearGraph() {
-    this.cy.remove(this.cy.elements())
+    this.cy.remove(this.cy.elements());
   }
 
   cytoStyleSheet = cytoscape.stylesheet()
@@ -208,10 +205,10 @@ export default class GraphHelper {
       content: 'data(label)',
       // 'text-outline-width': 2,
       // 'text-outline-color': colors.contour,
-      'text-margin-y': "-5px",
+      'text-margin-y': '-5px',
       'font-style': "'Open Sans', sans-serif",
       color: colors.contour,
-      "font-size": 24,
+      'font-size': 24,
     })
     .selector('node.root')
     .css({
@@ -250,12 +247,10 @@ export default class GraphHelper {
       // text style
       content: 'data(label)',
       'letter-spacing': '3px',
-      //'text-outline-width': 1,
-      //'text-outline-color': colors.contour,
+      //  'text-outline-width': 1,
+      //  'text-outline-color': colors.contour,
       'edge-text-rotation': 'autorotate',
       color: colors.contour,
-      "font-size": 24,
+      'font-size': 24,
     })
-
-
 }
