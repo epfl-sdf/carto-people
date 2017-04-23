@@ -51,7 +51,7 @@ const config = {
         include: APP_DIR,
         loaders: [
           'babel?' + JSON.stringify({
-            presets: ["es2015", "react"],
+            presets: ["stage-2", "es2015", "react"],
             plugins: [
               "transform-decorators-legacy", 
               "transform-class-properties", [
