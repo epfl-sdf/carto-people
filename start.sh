@@ -1,0 +1,1 @@
+nohup http-server public/ -p 8080 --cors &

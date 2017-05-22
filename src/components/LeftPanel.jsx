@@ -15,7 +15,7 @@ const LeftPanel = props => <Col xs={24} sm={24} md={4} lg={4} className="padded-
   </Row>
   <br />
   <Row>
-    <CompList />
+    {/* <CompList />*/}
   </Row>
 </Col>;
 
