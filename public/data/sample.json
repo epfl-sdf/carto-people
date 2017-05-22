@@ -2,8 +2,8 @@
   "employees": [
     {
       "id": 1111,
-      "first_name": "Morgan",
-      "last_name": "Freeman",
+      "name": "Morgan",
+      "lastname": "Freeman",
       "sex": "m",
       "research_group": {
         "id": 1,
@@ -26,8 +26,8 @@
     },
     {
       "id": 2222,
-      "first_name": "Angelina",
-      "last_name": "Jolie",
+      "name": "Angelina",
+      "lastname": "Jolie",
       "sex": "f",
       "research_group": {
         "id": 2,
@@ -46,8 +46,8 @@
     },
     {
       "id": 3333,
-      "first_name": "Marilyn",
-      "last_name": "Monroe",
+      "name": "Marilyn",
+      "lastname": "Monroe",
       "sex": "f",
       "research_group": {
         "id": 2,
@@ -70,8 +70,8 @@
     },
     {
       "id": 4444,
-      "first_name": "Brad",
-      "last_name": "Pitt",
+      "name": "Brad",
+      "lastname": "Pitt",
       "sex": "m",
       "research_group": {
         "id": 1,
@@ -98,8 +98,8 @@
     },
     {
       "id": 5555,
-      "first_name": "Johnny",
-      "last_name": "Depp",
+      "name": "Johnny",
+      "lastname": "Depp",
       "sex": "m",
       "research_group": {
         "id": 2,
@@ -122,8 +122,8 @@
     },
     {
       "id": 6666,
-      "first_name": "Johnny",
-      "last_name": "Hallyday",
+      "name": "Johnny",
+      "lastname": "Hallyday",
       "sex": "m",
       "research_group": {
         "id": 2,

@@ -12,6 +12,70 @@
   margin-left: 10px;
 }
 
+span.keywords {
+    font-size: 15px;
+    font-family: 'Open Sans';
+}
+
+div.cover {
+  height: 100vh;
+  overflow: scroll;
+}
+
+div.cover div {
+    height: 500px;
+    width: 280px;
+    background-color: white;
+    color: black;
+    padding: 0.5%;
+    border: 1px solid;
+    border-color: rgb(221,221,221);
+    border-radius: 0.4em;
+    padding: 10px;
+    margin-bottom:10px; 
+}
+
+h2, h3 {
+    font-family: 'Open Sans';
+    text-align: center;
+    margin-top: 12px;
+}
+
+h2 {
+    font-size: 26px;
+}
+
+h3 {
+    font-size: 20px;
+}
+
+div.cover img {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    max-height: 140px;
+    top: 0;
+    left: 0;
+    opacity: 1;
+    z-index: -1;
+    /*-webkit-box-reflect: below 0px 
+        -webkit-gradient(linear, left top, left bottom,from(transparent), color-stop(70%, transparent), to(rgba(255,255,255,0.4)));
+    */
+}
+
+div.cover img.logo {
+    max-height: 80px;
+}
+
+div.card td {
+    border: none;
+}
+
+div.card table {
+    height: 100%;
+    width: 100%;
+}
+
 body {
   font-family: 'Open-Sans', sans-serif!important
 }

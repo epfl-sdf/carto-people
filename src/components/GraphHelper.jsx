@@ -91,8 +91,6 @@ export default class GraphHelper {
   }
 
   addCompEdge(comp, data1, data2) {
-    console.warn(comp);
-
     const id1 = Number(data1.id) > Number(data2.id) ? data1.id : data2.id;
     const id2 = Number(data2.id) > Number(data1.id) ? data1.id : data2.id;
 

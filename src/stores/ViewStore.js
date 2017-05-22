@@ -2,6 +2,7 @@ import { observable, computed, action } from 'mobx';
 
 export default class ViewStore {
   @observable selectedNodes = [];
+  @observable changedFilters = false
   @observable filtersGroup = {
     keywords: [],
     researchGroups: undefined,
@@ -31,10 +32,12 @@ export default class ViewStore {
   }
 
   set filters({ type, selected: selectedIds }) {
+    this.changedFilters = true;
     this.filtersGroup[type] = selectedIds;
   }
 
   @action resetFilters() {
+    this.changedFilters = true;
     this.filtersGroup = {
       keywords: [],
       researchGroups: undefined,

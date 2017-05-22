@@ -23,19 +23,19 @@ class Map extends React.Component {
   }
 
   componentDidMount() {
-    console.log("mount")
     this.constructGraph();
     this.renderGraph();
   }
 
-  componentDidUpdate() {
-    console.log("update")
-    this.graphHelper.clearGraph();
-    this.renderGraph();
+  componentDidUpdate(prevProps) {
+    if (this.props.viewStore.changedFilters || prevProps.params !== this.props.params) {
+      this.graphHelper.clearGraph();
+      this.renderGraph();
+      this.props.viewStore.changedFilters = false;
+    }
   }
 
   componentWillUnmount() {
-    console.log(this.graphHelper)
     this.graphHelper.clearEvents();
   }
 

@@ -20,14 +20,16 @@ export default class SearchBar extends React.Component {
     } else {
       this.props.router.push('/');
     }
+
+    this.setState({ selected: null });
   }
   render() {
     const { dataStore } = this.props;
     const employees = dataStore.getEmployees().map(
-      employee => <Option key={employee.id} value={JSON.stringify({ id: employee.id, type: 'employee' })}>{`${employee.name} ${employee.lastname}`}</Option>
+      employee => <Option key={employee.id} searchKey={`${employee.name} ${employee.lastname}`.toLowerCase()} value={JSON.stringify({ id: employee.id, type: 'employee' })}>{`${employee.name} ${employee.lastname}`}</Option>
     );
     const keywords = dataStore.keywords.map(
-      competence => <Option key={competence.id} value={JSON.stringify({ id: competence.id, type: 'competence' })}>{competence.key}</Option>
+      competence => <Option key={competence.id} searchKey={competence.key.toLowerCase()} value={JSON.stringify({ id: competence.id, type: 'competence' })}>{competence.key}</Option>
     );
 
     return !dataStore.isLoading
@@ -38,7 +40,8 @@ export default class SearchBar extends React.Component {
           size="large"
           style={{ width: '100%' }}
           onChange={this.handleChange}
-          optionFilterProp="children"
+          value={this.state.selected ? JSON.stringify(this.state.selected) : undefined}
+          optionFilterProp="searchKey"
           placeholder="Search an employee or competence..."
         >
           <OptGroup label="Employees">

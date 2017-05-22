@@ -24,8 +24,6 @@ export default class DataStore {
           .reduce((acc, value, i) => ({ ...acc, [value.name]: i }), {});
         this.schools = uniqSchools.map((value, i) => ({ name: value.name, id: i }));
 
-        // When research groups are back :
-        // uniqBy(response.data.employees.map(emp => emp.research_group), 'id');
         const uniqueRG = uniqBy(flatten(
           response.data.People.map(emp => (emp.research_group ? emp.research_group : []))
         ), 'key');
