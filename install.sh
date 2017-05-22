@@ -9,4 +9,4 @@ sudo apt-get install -y nodejs
 npm install
 npm build
 
-npm install -g http-server
+sudo npm install -g http-server
