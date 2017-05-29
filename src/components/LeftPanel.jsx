@@ -14,9 +14,6 @@ const LeftPanel = props => <Col xs={24} sm={24} md={4} lg={4} className="padded-
     <Filters params={props.params} />
   </Row>
   <br />
-  <Row>
-    {/* <CompList />*/}
-  </Row>
 </Col>;
 
 export default LeftPanel;

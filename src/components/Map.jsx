@@ -40,21 +40,21 @@ class Map extends React.Component {
   }
 
   constructGraph() {
-    this.graphHelper.initGraph(this.props.params.id)
+    this.graphHelper.initGraph(this.props.params.id);
 
     this.graphHelper.setupEvents(
-      () => {this.props.viewStore.selectedNodes = this.graphHelper.getSelectedNode();},
-      () => {this.props.viewStore.selectedNodes = this.graphHelper.getSelectedNode();},
+      () => { this.props.viewStore.selectedNodes = this.graphHelper.getSelectedNode(); },
+      () => { this.props.viewStore.selectedNodes = this.graphHelper.getSelectedNode(); },
       (event) => {
         const nodeData = event.cyTarget.data();
 
         switch (nodeData.type) {
           case 'employee': {
-            this.props.router.push(`/employee/${nodeData.id}`)
+            this.props.router.push(`/employee/${nodeData.id}`);
             break;
           }
           case 'competence': {
-            this.props.router.push(`/competence/${nodeData.id}`)
+            this.props.router.push(`/competence/${nodeData.id}`);
             break;
           }
           default: {
@@ -62,7 +62,7 @@ class Map extends React.Component {
           }
         }
       }
-    )
+    );
   }
 
   fetchData() {
@@ -78,7 +78,8 @@ class Map extends React.Component {
     }
   }
 
-  buildCompEdges(data) {
+  buildCompEdges(data, keywords) {
+    console.log(keywords);
     // for each node
     for (let i = 0; i < data.length; i += 1) {
       // check other next nodes
@@ -93,36 +94,37 @@ class Map extends React.Component {
         if (inter.length !== 0) {
           for (let k = 0; k < inter.length; k += 1) {
             const comp = this.props.dataStore.getCompetence(inter[k]);
-            this.graphHelper.addCompEdge(comp, data[i], data[j])
+            if (keywords.find(keyId => keyId === comp.key)) {
+              this.graphHelper.addCompEdge(comp, data[i], data[j], true);
+            } else {
+              this.graphHelper.addCompEdge(comp, data[i], data[j]);
+            }
           }
         }
-
       }
     }
   }
 
   constructLinkedData(data) {
-
     switch (this.props.params.type) {
       case 'employee': {
-        this.graphHelper.addEmploye(data)
-        this.graphHelper.expandCompFromPeople(data)
+        this.graphHelper.addEmploye(data);
+        this.graphHelper.expandCompFromPeople(data);
         break;
       }
       case 'competence': {
-        this.graphHelper.addComp(data)
-        this.graphHelper.expandPeopleFromComp(data, this.props.dataStore)
+        this.graphHelper.addComp(data);
+        this.graphHelper.expandPeopleFromComp(data, this.props.dataStore);
         break;
       }
       // default is for the main map
       // nodes are employees and link are common keywords between them
       default: {
-        
         for (let i = 0; i < data.length; i += 1) {
-          this.graphHelper.addEmploye(data[i])
+          this.graphHelper.addEmploye(data[i]);
         }
 
-        this.buildCompEdges(data)
+        this.buildCompEdges(data, this.props.keywords);
 
         break;
       }
@@ -181,7 +183,7 @@ class Map extends React.Component {
 
   renderGraph() {
     this.constructLinkedData(this.fetchData());
-    this.graphHelper.resetLayout()
+    this.graphHelper.resetLayout();
   }
 
   render() {

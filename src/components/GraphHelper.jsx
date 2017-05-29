@@ -84,77 +84,66 @@ export default class GraphHelper {
     this.cy.layout({
       name: 'breadthfirst',
       circle: true,
-      spacingFactor: 3,
+      spacingFactor: 2,
       avoidOverlap: true,
       roots: this.cy.$(`#${rootid}`),
     });
   }
 
-  addCompEdge(comp, data1, data2) {
+  addCompEdge(comp, data1, data2, imp) {
     const id1 = Number(data1.id) > Number(data2.id) ? data1.id : data2.id;
     const id2 = Number(data2.id) > Number(data1.id) ? data1.id : data2.id;
 
-    this.cy.add({
-      group: 'edges',
-      data: {
-        id: `${id1}_${id2}`,
-        label: comp.name,
-        source: id1,
-        target: id2,
-      },
-    });
+    if (this.cy.getElementById(`${id1}_${id2}`).length === 0) {
+      this.cy.add({
+        group: 'edges',
+        classes: imp ? 'important' : '',
+        data: {
+          id: `${id1}_${id2}`,
+          label: comp.name,
+          source: id1,
+          target: id2,
+        },
+      });
+    }
   }
 
   addComp(data) {
-    console.log(data);
-    this.cy.add({
-      group: 'nodes',
-      classes: 'competence',
-      data: {
-        id: data.id,
-        label: `${data.key}`,
-        type: 'competence',
-        details: data,
-      },
-    });
+    if (this.cy.getElementById(`${data.id}`).length === 0) {
+      this.cy.add({
+        group: 'nodes',
+        classes: 'competence',
+        data: {
+          id: data.id,
+          label: `${data.key}`,
+          type: 'competence',
+          details: data,
+        },
+      });
+    }
   }
 
   addEmploye(data) {
-    this.cy.add({
-      group: 'nodes',
-      classes: `employee ${data.sex === '1' ? 'm' : 'f'}`,
-      data: {
-        id: data.id,
-        label: `${data.name} ${data.lastname}`,
-        type: 'employee',
-        details: data,
-      },
-    });
+    if (this.cy.getElementById(`${data.id}`).length === 0) {
+      this.cy.add({
+        group: 'nodes',
+        classes: `employee ${data.sex === '1' ? 'm' : 'f'}`,
+        data: {
+          id: data.id,
+          label: `${data.name} ${data.lastname}`,
+          type: 'employee',
+          details: data,
+        },
+      });
+    }
   }
 
   expandCompFromPeople(nodeData) {
     const keywords = nodeData.keywords;
 
     for (let i = 0; i < keywords.length; i += 1) {
-      this.cy.add([
-        {
-          group: 'nodes',
-          classes: 'competence',
-          data: {
-            id: keywords[i].id,
-            label: `${keywords[i].key}`,
-            type: 'competence',
-            details: keywords[i],
-          },
-        }, {
-          group: 'edges',
-          data: {
-            id: `${nodeData.id}_${keywords[i].id}`,
-            source: nodeData.id,
-            target: keywords[i].id,
-          },
-        },
-      ]);
+      this.addComp(keywords[i]);
+      this.addCompEdge(keywords[i], nodeData, keywords[i]);
     }
   }
 
@@ -162,23 +151,8 @@ export default class GraphHelper {
     const employees = dataStore.getEmployeesWithCompetence(nodeData.id);
 
     for (let i = 0; i < employees.length; i += 1) {
-      this.cy.add([{
-        group: 'nodes',
-        classes: `employee ${employees[i].sex === '1' ? 'm' : 'f'}`,
-        data: {
-          id: employees[i].id,
-          label: `${employees[i].name} ${employees[i].lastname}`,
-          type: 'employee',
-          details: employees[i],
-        },
-      }, {
-        group: 'edges',
-        data: {
-          id: `${nodeData.id}_${employees[i].id}`,
-          source: nodeData.id,
-          target: employees[i].id,
-        },
-      }]);
+      this.addEmploye(employees[i]);
+      this.addCompEdge(nodeData, nodeData, employees[i]);
     }
   }
 
@@ -188,6 +162,10 @@ export default class GraphHelper {
 
   clearGraph() {
     this.cy.remove(this.cy.elements());
+  }
+
+  filterGraph(keep) {
+    console.log(this.cy.elements());
   }
 
   cytoStyleSheet = cytoscape.stylesheet()
@@ -251,4 +229,9 @@ export default class GraphHelper {
       color: colors.contour,
       'font-size': 24,
     })
+  .selector('edge.important')
+  .css({
+    width: 5,
+    'line-color': colors.blue,
+  })
 }

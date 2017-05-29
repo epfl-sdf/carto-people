@@ -12,12 +12,13 @@ export default class ViewStore {
   @computed get filters() {
     const filters = [];
 
+    /*
     for (let i = 0; i < this.filtersGroup.keywords.length; i += 1) {
       const competenceId = this.filtersGroup.keywords[i];
       filters.push(
         e => e.keywords.map(c => c.id).includes(parseInt(competenceId, 10))
       );
-    }
+    }*/
     if (this.filtersGroup.researchGroups) {
       filters.push(e => e.researchGroups
       .filter(rg => rg.id === parseInt(this.filtersGroup.researchGroups, 10)).length > 0);
@@ -34,6 +35,10 @@ export default class ViewStore {
   set filters({ type, selected: selectedIds }) {
     this.changedFilters = true;
     this.filtersGroup[type] = selectedIds;
+  }
+
+  @computed get keywords() {
+    return this.filtersGroup.keywords;
   }
 
   @action resetFilters() {

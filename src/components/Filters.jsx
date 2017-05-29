@@ -9,6 +9,7 @@ const Filters = ({ viewStore, dataStore, params: { id, type } }) => {
     <h2>Filters</h2>
     <p>keywords:</p>
     <Select
+      showSearch
       key="competence_filter"
       multiple
       style={{ width: '100%' }}
@@ -16,7 +17,7 @@ const Filters = ({ viewStore, dataStore, params: { id, type } }) => {
       onChange={(selected) => { viewStore.filters = { type: 'keywords', selected }; }}
     >
       {dataStore.keywords.map(
-        c => <Option key={c.id} value={c.id.toString()}>{c.key}</Option>
+        c => <Option key={c.id} searchKey={c.key} value={c.key}>{c.key}</Option>
       )}
     </Select>
     <br />

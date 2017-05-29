@@ -25,6 +25,7 @@ const RightPanel = (props) => {
         && <Map
           dataStore={dataStore}
           filters={viewStore.filters}
+          keywords={viewStore.keywords}
           params={props.params}
           router={props.router}
         />}
