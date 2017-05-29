@@ -84,7 +84,7 @@ export default class GraphHelper {
     this.cy.layout({
       name: 'breadthfirst',
       circle: true,
-      spacingFactor: 2,
+      spacingFactor: 3,
       avoidOverlap: true,
       roots: this.cy.$(`#${rootid}`),
     });
