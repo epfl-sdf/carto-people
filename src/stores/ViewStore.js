@@ -1,13 +1,15 @@
 import { observable, computed, action } from 'mobx';
+import _ from 'lodash';
 
 export default class ViewStore {
   @observable selectedNodes = [];
-  @observable changedFilters = false
+  @observable selectedComps = [];
+  @observable changedFilters = false;
   @observable filtersGroup = {
     keywords: [],
     researchGroups: undefined,
     school: undefined,
-  }
+  };
 
   @computed get filters() {
     const filters = [];
@@ -20,12 +22,15 @@ export default class ViewStore {
       );
     }*/
     if (this.filtersGroup.researchGroups) {
-      filters.push(e => e.researchGroups
-      .filter(rg => rg.id === parseInt(this.filtersGroup.researchGroups, 10)).length > 0);
+      filters.push(
+        e => _.find(
+          this.filtersGroup.researchGroups,
+          id => e.researchGroups.length > 0 && parseInt(id, 10) === e.researchGroups[0].id)
+      );
     }
     if (this.filtersGroup.school) {
       filters.push(
-        e => e.school.id === parseInt(this.filtersGroup.school, 10)
+        e => _.find(this.filtersGroup.school, id => parseInt(id, 10) === e.school.id)
       );
     }
 
@@ -34,7 +39,11 @@ export default class ViewStore {
 
   set filters({ type, selected: selectedIds }) {
     this.changedFilters = true;
-    this.filtersGroup[type] = selectedIds;
+    if (selectedIds.length > 0) {
+      this.filtersGroup[type] = selectedIds;
+    } else {
+      this.filtersGroup[type] = undefined;
+    }
   }
 
   @computed get keywords() {

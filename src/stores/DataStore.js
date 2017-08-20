@@ -1,5 +1,5 @@
 import { observable, action, computed } from 'mobx';
-import { flatten, uniqBy } from 'lodash';
+import { flatten, uniqBy, uniq } from 'lodash';
 import axios from 'axios';
 
 export default class DataStore {
@@ -19,22 +19,22 @@ export default class DataStore {
   @action loadEmployees() {
     axios.get('/data/realTest.json')
       .then((response) => {
-        const uniqSchools = uniqBy(response.data.People.map(emp => emp.school), 'name');
+        const uniqSchools = uniq(response.data.People.map(emp => emp.school));
         const schoolMap = uniqSchools
-          .reduce((acc, value, i) => ({ ...acc, [value.name]: i }), {});
-        this.schools = uniqSchools.map((value, i) => ({ name: value.name, id: i }));
+          .reduce((acc, value, i) => ({ ...acc, [value]: i }), {});
+        this.schools = uniqSchools.map((value, i) => ({ name: value, id: i }));
 
-        const uniqueRG = uniqBy(flatten(
-          response.data.People.map(emp => (emp.research_group ? emp.research_group : []))
-        ), 'key');
+        const uniqueRG = uniq(flatten(
+          response.data.People.map(emp => (emp.institut || []))
+        ));
 
         const rgMap = uniqueRG
-          .reduce((acc, value, i) => ({ ...acc, [value.key]: i + 2000 }), {});
+          .reduce((acc, value, i) => ({ ...acc, [value]: i + 2000 }), {});
 
-        this.researchGroups = uniqueRG.map((value, i) => ({ key: value.key, id: i + 2000 }));
+        this.researchGroups = uniqueRG.map((value, i) => ({ key: value, id: i + 2000 }));
 
         const uniqueKeywords = uniqBy(flatten(
-          response.data.People.map(emp => (emp.keywords ? emp.keywords : []))
+          response.data.People.map(emp => (emp.keywords || []))
         ), 'key');
 
         const keywordMap = uniqueKeywords
@@ -42,25 +42,24 @@ export default class DataStore {
 
         this.keywords = uniqueKeywords.map((value, i) => ({ key: value.key, id: i + 1000 }));
 
-        this.employees = response.data.People.map((emp) => {
+        this.employees = response.data.People.map((emp, index) => {
           let newRG = [];
           let newKeywords = [];
           let school = {};
 
-          if (emp.research_group) {
-            newRG = emp.research_group
-              .map(({ key }) => ({ id: rgMap[key], key }));
+          if (emp.institut) {
+            newRG = [{ id: rgMap[emp.institut], key: emp.institut }];
           }
 
           if (emp.school) {
-            school = { id: schoolMap[emp.school.name], name: emp.school.name };
+            school = { id: schoolMap[emp.school], name: emp.school };
           }
 
           if (emp.keywords) {
             newKeywords = emp.keywords
               .map(({ key }) => ({ id: keywordMap[key], key }));
           }
-          return { ...emp, keywords: newKeywords, researchGroups: newRG, school };
+          return { ...emp, id: index, keywords: newKeywords, researchGroups: newRG, school };
         });
       })
       .catch((error) => {

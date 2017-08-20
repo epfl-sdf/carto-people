@@ -21,7 +21,7 @@ export default class GraphHelper {
   initGraph(rootid) {
     this.cy = cytoscape({
       container: document.getElementById('graph-container'),
-      userPanningEnabled: false,
+      userPanningEnabled: true,
       pan: 'center',
       style: this.cytoStyleSheet,
       motionBlur: true,
@@ -80,32 +80,52 @@ export default class GraphHelper {
     this.cy.off(['select', 'unselect', 'doubleTap']);
   }
 
-  resetLayout(rootid) {
+  resetLayout(big) {
+    console.log(big)
     this.cy.layout({
-      name: 'breadthfirst',
+      name: big ? 'breadthfirst' : 'concentric',
       circle: true,
-      spacingFactor: 3,
+      spacingFactor: 1,
       avoidOverlap: true,
-      roots: this.cy.$(`#${rootid}`),
     });
   }
 
-  addCompEdge(comp, data1, data2, imp) {
+  getEdge(comps, data1, data2, imp) {
     const id1 = Number(data1.id) > Number(data2.id) ? data1.id : data2.id;
     const id2 = Number(data2.id) > Number(data1.id) ? data1.id : data2.id;
 
-    if (this.cy.getElementById(`${id1}_${id2}`).length === 0) {
-      this.cy.add({
-        group: 'edges',
-        classes: imp ? 'important' : '',
-        data: {
-          id: `${id1}_${id2}`,
-          label: comp.name,
-          source: id1,
-          target: id2,
-        },
-      });
-    }
+    return {
+      group: 'edges',
+      classes: imp ? 'important' : '',
+      data: {
+        type: 'link',
+        comps,
+        id: `${id1}_${id2}`,
+        source: id1,
+        target: id2,
+      },
+    };
+  }
+
+  addEdges(edges) {
+    this.cy.add(edges);
+  }
+
+  addCompEdge(comps, data1, data2, imp) {
+    const id1 = Number(data1.id) > Number(data2.id) ? data1.id : data2.id;
+    const id2 = Number(data2.id) > Number(data1.id) ? data1.id : data2.id;
+
+    this.cy.add({
+      group: 'edges',
+      classes: imp ? 'important' : '',
+      data: {
+        type: 'link',
+        comps,
+        id: `${id1}_${id2}`,
+        source: id1,
+        target: id2,
+      },
+    });
   }
 
   addComp(data) {
@@ -234,4 +254,10 @@ export default class GraphHelper {
     width: 5,
     'line-color': colors.blue,
   })
+  .selector('edge:selected')
+  .css({
+    width: 5,
+    'line-color': `${colors.contour}`,
+  })
+
 }

@@ -1,11 +1,12 @@
 import React from 'react';
-import { Menu, Icon } from 'antd';
+import { Menu, Icon, Col, Row } from 'antd';
 import { inject } from 'mobx-react';
-import { intersection } from 'lodash';
+import { intersectionBy, intersection } from 'lodash';
 
 import GraphHelper from './GraphHelper';
 
 const SubMenu = Menu.SubMenu;
+const MenuItemGroup = Menu.ItemGroup;
 
 @inject('viewStore')
 class Map extends React.Component {
@@ -24,13 +25,13 @@ class Map extends React.Component {
 
   componentDidMount() {
     this.constructGraph();
-    this.renderGraph();
+    this.renderGraph(!this.props.params.type);
   }
 
   componentDidUpdate(prevProps) {
     if (this.props.viewStore.changedFilters || prevProps.params !== this.props.params) {
       this.graphHelper.clearGraph();
-      this.renderGraph();
+      this.renderGraph(!this.props.params.type);
       this.props.viewStore.changedFilters = false;
     }
   }
@@ -43,7 +44,14 @@ class Map extends React.Component {
     this.graphHelper.initGraph(this.props.params.id);
 
     this.graphHelper.setupEvents(
-      () => { this.props.viewStore.selectedNodes = this.graphHelper.getSelectedNode(); },
+      (event) => {
+        const selected = event.cyTarget.data();
+        if (selected.type === 'link') {
+          this.props.viewStore.selectedComps = selected.comps;
+        } else {
+          this.props.viewStore.selectedNodes = this.graphHelper.getSelectedNode();
+        }
+      },
       () => { this.props.viewStore.selectedNodes = this.graphHelper.getSelectedNode(); },
       (event) => {
         const nodeData = event.cyTarget.data();
@@ -79,30 +87,26 @@ class Map extends React.Component {
   }
 
   buildCompEdges(data, keywords) {
-    console.log(keywords);
+    const edges = []
     // for each node
     for (let i = 0; i < data.length; i += 1) {
       // check other next nodes
       for (let j = i + 1; j < data.length; j += 1) {
         // get keywords in common
-        const inter = intersection(
-          data[j].keywords.map(c => c.id),
-          data[i].keywords.map(c => c.id)
+        const inter = intersectionBy(
+          data[j].keywords,
+          data[i].keywords,
+          'id'
         );
-
         // build edge per intersecting keywords
         if (inter.length !== 0) {
-          for (let k = 0; k < inter.length; k += 1) {
-            const comp = this.props.dataStore.getCompetence(inter[k]);
-            if (keywords.find(keyId => keyId === comp.key)) {
-              this.graphHelper.addCompEdge(comp, data[i], data[j], true);
-            } else {
-              this.graphHelper.addCompEdge(comp, data[i], data[j]);
-            }
-          }
+          console.log(i, j);
+          const hasKey = !keywords ? false : inter.some(r => keywords.includes(r.key));
+          edges.push(this.graphHelper.getEdge(inter.map(r => r.key), data[i], data[j], hasKey));
         }
       }
     }
+    this.graphHelper.addEdges(edges);
   }
 
   constructLinkedData(data) {
@@ -181,40 +185,46 @@ class Map extends React.Component {
     }
   }
 
-  renderGraph() {
+  renderGraph(big) {
     this.constructLinkedData(this.fetchData());
-    this.graphHelper.resetLayout();
+    this.graphHelper.resetLayout(big);
   }
 
   render() {
     return (<div>
-      <Menu mode="horizontal" onClick={this.handleMenuClick}>
-        <SubMenu title={<span><Icon type="download" />Export</span>}>
-          <Menu.Item key="export:jpg">To JPG</Menu.Item>
-          <Menu.Item key="export:png">To PNG</Menu.Item>
-          <Menu.Item key="export:svg">To SVG</Menu.Item>
-        </SubMenu>
-        <Menu.Item key="zoom:in">
-          <Icon type="plus-circle-o" /> Zoom in
+      <Row>
+        <Col span={24} className="menu">
+          <Menu mode="horizontal" onClick={this.handleMenuClick}>
+            <SubMenu title={<span><Icon type="download" />Export</span>}>
+              <Menu.Item key="export:jpg">To JPG</Menu.Item>
+              <Menu.Item key="export:png">To PNG</Menu.Item>
+              <Menu.Item key="export:svg">To SVG</Menu.Item>
+            </SubMenu>
+            <Menu.Item key="zoom:in">
+              <Icon type="plus-circle-o" /> Zoom in
+            </Menu.Item>
+            <Menu.Item key="zoom:out">
+              <Icon type="minus-circle-o" /> Zoom out
           </Menu.Item>
-        <Menu.Item key="zoom:out">
-          <Icon type="minus-circle-o" /> Zoom out
-        </Menu.Item>
-        <Menu.Item key="recenter">
-          <Icon type="select" /> Fit to view
-        </Menu.Item>
-        <Menu.Item key="back">
-          <Icon type="arrow-left" /> Previous
-        </Menu.Item>
-        <Menu.Item key="forward">
-          <Icon type="arrow-right" /> Forward
-        </Menu.Item>
-        {this.props.params.type && this.props.params.id &&
-          <Menu.Item key="Origin" style={{ float: 'Right' }}>
-            <Icon type="rollback" /> Back to main map
-          </Menu.Item>}
-      </Menu>
-      <div id="graph-container" />
+            <Menu.Item key="recenter">
+              <Icon type="select" /> Fit to view
+          </Menu.Item>
+            <Menu.Item key="back">
+              <Icon type="arrow-left" /> Previous
+          </Menu.Item>
+            <Menu.Item key="forward">
+              <Icon type="arrow-right" /> Forward
+          </Menu.Item>
+            {this.props.params.type && this.props.params.id &&
+            <Menu.Item key="Origin" style={{ float: 'Right' }}>
+              <Icon type="rollback" /> Back to main map
+            </Menu.Item>}
+          </Menu>
+        </Col>
+      </Row>
+      <Row>
+        <Col><div id="graph-container" /></Col>
+      </Row>
     </div>);
   }
 }

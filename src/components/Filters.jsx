@@ -7,11 +7,11 @@ const Option = Select.Option;
 const Filters = ({ viewStore, dataStore, params: { id, type } }) => {
   return !dataStore.isLoading && !id && !type && <div>
     <h2>Filters</h2>
-    <p>keywords:</p>
+    <h4>keywords:</h4>
     <Select
       showSearch
       key="competence_filter"
-      multiple
+      mode="multiple"
       style={{ width: '100%' }}
       placeholder="Select the competence(s)"
       onChange={(selected) => { viewStore.filters = { type: 'keywords', selected }; }}
@@ -22,8 +22,9 @@ const Filters = ({ viewStore, dataStore, params: { id, type } }) => {
     </Select>
     <br />
     <br />
-    <p>Research groups:</p>
+    <h4>Instituts:</h4>
     <Select
+      mode="multiple"
       allowClear
       key="research_group_filter"
       style={{ width: '100%' }}
@@ -36,8 +37,9 @@ const Filters = ({ viewStore, dataStore, params: { id, type } }) => {
     </Select>
     <br />
     <br />
-    <p>Schools:</p>
+    <h4>Schools:</h4>
     <Select
+      mode="multiple"
       allowClear
       key="school_filter"
       style={{ width: '100%' }}
@@ -48,6 +50,16 @@ const Filters = ({ viewStore, dataStore, params: { id, type } }) => {
         s => <Option key={s.id} value={s.id.toString()}>{s.name}</Option>
       )}
     </Select>
+    <br />
+    {viewStore.selectedComps.length > 0 &&
+    <div>
+      <br />
+      <h4>Selected link keywords</h4>
+      <ul>
+        {viewStore.selectedComps.map(c => <li>{c}</li>)}
+      </ul>
+    </div>
+    }
   </div>;
 };
 

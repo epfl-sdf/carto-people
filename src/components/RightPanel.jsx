@@ -9,7 +9,24 @@ import Card from './Card';
 const RightPanel = (props) => {
   const { dataStore, viewStore } = props;
 
-  const employes = dataStore.getEmployees(viewStore.filters);
+  let employes;
+  switch (props.params.type) {
+    case 'employee': {
+      employes = [dataStore.getEmployee(props.params.id)];
+      break;
+    }
+    case 'competence': {
+      employes = dataStore.getEmployeesWithCompetence(props.params.id);
+      break;
+    }
+    // default is for the main map
+    // nodes are employees and link are common keywords between them
+    default: {
+      employes = dataStore.getEmployees(viewStore.filters);
+      break;
+    }
+  }
+
   let finalOrder;
   if (viewStore.selectedNodes.length >= 1 && viewStore.selectedNodes[0].classes.includes('employee')) {
     const selected = viewStore.selectedNodes.map(s => s.data.details);
