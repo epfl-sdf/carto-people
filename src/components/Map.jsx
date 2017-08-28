@@ -47,7 +47,7 @@ class Map extends React.Component {
       (event) => {
         const selected = event.cyTarget.data();
         if (selected.type === 'link') {
-          this.props.viewStore.selectedComps = selected.comps;
+          this.props.viewStore.selectedComps = this.graphHelper.getSelectedEdges();
         } else {
           this.props.viewStore.selectedNodes = this.graphHelper.getSelectedNode();
         }

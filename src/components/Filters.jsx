@@ -1,5 +1,6 @@
 import React from 'react';
 import { inject, observer } from 'mobx-react';
+import _ from 'lodash';
 import { Select } from 'antd';
 
 const Option = Select.Option;
@@ -20,8 +21,7 @@ const Filters = ({ viewStore, dataStore, params: { id, type } }) => !dataStore.i
       )}
       </Select></div>}
   <br />
-  <br />
-  <h4>Instituts:</h4>
+  <h4>Research groups:</h4>
   <Select
     mode="multiple"
     allowClear
@@ -53,9 +53,15 @@ const Filters = ({ viewStore, dataStore, params: { id, type } }) => !dataStore.i
     {viewStore.selectedComps.length > 0 &&
     <div>
       <br />
-      <h4>Selected link keywords</h4>
+      <h4 style={{ color: '#E12727' }}>Selected link keywords</h4>
       <ul>
-        {viewStore.selectedComps.map(c => <li>{c}</li>)}
+        {
+          _.uniq(
+            _
+            .flatMap(viewStore.selectedComps, c => c.data.comps.slice())
+          )
+            .map(c => <li style={{ listStyle: 'circle', marginLeft: 20 }} key={c}>{c}</li>)
+        }
       </ul>
     </div>
     }

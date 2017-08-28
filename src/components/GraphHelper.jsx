@@ -119,7 +119,6 @@ export default class GraphHelper {
       group: 'edges',
       classes: imp ? 'important' : '',
       data: {
-        type: 'link',
         comps,
         id: `${id1}_${id2}`,
         source: id1,
@@ -180,6 +179,10 @@ export default class GraphHelper {
 
   getSelectedNode() {
     return this.cy.$(':selected').jsons().filter(e => e.group === 'nodes');
+  }
+
+  getSelectedEdges() {
+    return this.cy.$(':selected').jsons().filter(e => e.data.type === 'link');
   }
 
   clearGraph() {
