@@ -118,7 +118,7 @@ class Map extends React.Component {
       }
       case 'competence': {
         this.graphHelper.addComp(data);
-        this.graphHelper.expandPeopleFromComp(data, this.props.dataStore);
+        this.graphHelper.expandPeopleFromComp(data, this.props.filters, this.props.dataStore);
         break;
       }
       // default is for the main map

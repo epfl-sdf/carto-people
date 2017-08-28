@@ -16,7 +16,7 @@ const RightPanel = (props) => {
       break;
     }
     case 'competence': {
-      employes = dataStore.getEmployeesWithCompetence(props.params.id);
+      employes = dataStore.getEmployeesWithCompetence(viewStore.filters, props.params.id);
       break;
     }
     // default is for the main map

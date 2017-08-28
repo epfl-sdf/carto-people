@@ -16,7 +16,7 @@ const colors = {
 };
 
 export default class GraphHelper {
-  cy = null
+  cy = null;
 
   initGraph(rootid) {
     this.cy = cytoscape({
@@ -81,7 +81,7 @@ export default class GraphHelper {
   }
 
   resetLayout(big) {
-    console.log(big)
+    console.log(big);
     this.cy.layout({
       name: big ? 'breadthfirst' : 'concentric',
       circle: true,
@@ -167,8 +167,10 @@ export default class GraphHelper {
     }
   }
 
-  expandPeopleFromComp(nodeData, dataStore) {
-    const employees = dataStore.getEmployeesWithCompetence(nodeData.id);
+  expandPeopleFromComp(nodeData, filters, dataStore) {
+    console.log(filters);
+    console.log(nodeData.id);
+    const employees = dataStore.getEmployeesWithCompetence(filters, nodeData.id);
 
     for (let i = 0; i < employees.length; i += 1) {
       this.addEmploye(employees[i]);
@@ -182,10 +184,6 @@ export default class GraphHelper {
 
   clearGraph() {
     this.cy.remove(this.cy.elements());
-  }
-
-  filterGraph(keep) {
-    console.log(this.cy.elements());
   }
 
   cytoStyleSheet = cytoscape.stylesheet()

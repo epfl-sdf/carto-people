@@ -25,7 +25,7 @@ export default class DataStore {
         this.schools = uniqSchools.map((value, i) => ({ name: value, id: i }));
 
         const uniqueRG = uniq(flatten(
-          response.data.People.map(emp => (emp.institut || []))
+          response.data.People.map(emp => (emp.researchgrp || []))
         ));
 
         const rgMap = uniqueRG
@@ -47,8 +47,8 @@ export default class DataStore {
           let newKeywords = [];
           let school = {};
 
-          if (emp.institut) {
-            newRG = [{ id: rgMap[emp.institut], key: emp.institut }];
+          if (emp.researchgrp) {
+            newRG = [{ id: rgMap[emp.researchgrp], key: emp.researchgrp }];
           }
 
           if (emp.school) {
@@ -80,8 +80,8 @@ export default class DataStore {
     return this.employees.find(e => e.id === parseInt(employeeId, 10));
   }
 
-  getEmployeesWithCompetence(competenceId) {
-    return this.employees.filter(
+  getEmployeesWithCompetence(filters, competenceId) {
+    return this.getEmployees(filters).filter(
       e => e.keywords.map(c => c.id).includes(parseInt(competenceId, 10))
     );
   }
