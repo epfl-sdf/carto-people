@@ -42,11 +42,11 @@ export default class GraphHelper {
   }
 
   getPng() {
-    this.cy.png();
+    return this.cy.png();
   }
 
   getJpg() {
-    this.cy.jpg();
+    return this.cy.jpg();
   }
 
   createDoubleTapEvent() {

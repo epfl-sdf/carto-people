@@ -141,6 +141,7 @@ class Map extends React.Component {
         // ugly solution due to the fact that HTML5 download tag not widely supported
         const link = document.createElement('a');
         link.href = this.graphHelper.getJpg();
+        console.log(link)
         link.download = 'export.jpg';
         link.click();
         break;
@@ -150,10 +151,6 @@ class Map extends React.Component {
         link.href = this.graphHelper.getPng();
         link.download = 'export.png';
         link.click();
-        break;
-      }
-      case 'export:svg': {
-        alert('Not implemented yet');
         break;
       }
       case 'zoom:in': {
