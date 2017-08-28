@@ -30,6 +30,7 @@ class Map extends React.Component {
 
   componentDidUpdate(prevProps) {
     if (this.props.viewStore.changedFilters || prevProps.params !== this.props.params) {
+      this.props.viewStore.selectedComps = [];
       this.graphHelper.clearGraph();
       this.renderGraph(!this.props.params.type);
       this.props.viewStore.changedFilters = false;
@@ -195,7 +196,6 @@ class Map extends React.Component {
             <SubMenu title={<span><Icon type="download" />Export</span>}>
               <Menu.Item key="export:jpg">To JPG</Menu.Item>
               <Menu.Item key="export:png">To PNG</Menu.Item>
-              <Menu.Item key="export:svg">To SVG</Menu.Item>
             </SubMenu>
             <Menu.Item key="zoom:in">
               <Icon type="plus-circle-o" /> Zoom in
